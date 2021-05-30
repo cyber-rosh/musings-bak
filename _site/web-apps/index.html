@@ -1,0 +1,372 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.23.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Ideas on Scaling up security architecture for deploying web Apps - The Rosh</title>
+<meta name="description" content="Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.    The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.">
+
+
+  <meta name="author" content="Your Name">
+  
+  <meta property="article:author" content="Your Name">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="The Rosh">
+<meta property="og:title" content="Ideas on Scaling up security architecture for deploying web Apps">
+<meta property="og:url" content="https://cyber-rosh.github.io/musings/web-apps/">
+
+
+  <meta property="og:description" content="Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.    The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-05-22T00:00:00+05:30">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://cyber-rosh.github.io/musings/web-apps/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "The Rosh",
+      "url": "https://cyber-rosh.github.io/musings/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/musings/feed.xml" type="application/atom+xml" rel="alternate" title="The Rosh Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/musings/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/musings/">
+          The Rosh
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/">Quick-Start Guide</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Ideas on Scaling up security architecture for deploying web Apps">
+    <meta itemprop="description" content="Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.  The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.">
+    <meta itemprop="datePublished" content="2021-05-22T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Ideas on Scaling up security architecture for deploying web Apps
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-05-22T00:00:00+05:30">May 22, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.</p>
+<blockquote>
+  <p>The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.</p>
+</blockquote>
+
+<p>Now, as we have worked out our design goals, how we go about reworking the architecture and achieving the design goals. Of course there are many ways, but one of the ways is to introduce the undermentioned artifacts.</p>
+
+<ul>
+  <li>Firewall</li>
+  <li>Proxy</li>
+  <li>Web Application Firewall</li>
+</ul>
+
+<p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" /></p>
+
+<p>The firewall at the ingress of the Virtual Private Server (VPS), will ensure that only https traffic is allowed for our proxy inside VPS. We can also have settings in which the proxy is accessible from specific IP/subnet, we can have settings as follows for <code class="language-plaintext highlighter-rouge">firewalld</code> in CentOS7:</p>
+
+<p>Firewalld Rules</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a trusted Zone having specific IP</span>
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-source</span><span class="o">=</span>10.10.10.10 <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
+<span class="c"># Add service http and https to the trusted zone</span>
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
+<span class="c"># Remove service http and https from the public zone</span>
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>public &amp;
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>public &amp;
+firewall-cmd <span class="nt">--reload</span>
+</code></pre></div></div>
+
+<p>The proxy will ensure that our website is not directly exposed to the outside world and has additional benefits of load balancing. We can setup Access Control Lists (ACLs) so that only specific endpoints of our website APIS are accessible from outside. Some of the sample configuration settings for the HAproxy could be as follows:</p>
+
+<p>HAProxy Config Rules</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>frontend httpsandhttp
+        <span class="nb">bind</span> <span class="k">*</span>:80
+        <span class="nb">bind</span> <span class="k">*</span>:443 ssl crt /etc/ssl/haproxy.pem
+        <span class="c"># Redirect traffic to https        </span>
+        http-request redirect scheme https unless <span class="o">{</span> ssl_fc <span class="o">}</span>
+        mode http
+        acl app1 path_end <span class="nt">-i</span> /app1
+        acl app2 path_end <span class="nt">-i</span> /app2    	
+    	use_backend app1Servers <span class="k">if </span>app1 
+    	use_backend app2Servers <span class="k">if </span>app2
+
+backend app1Servers
+        balance roundrobin        
+        mode http
+        server webserver1 127.0.0.1:2222 check weight 1 maxconn 50 ssl verify none
+        
+backend app2Servers
+        balance roundrobin        
+        mode http
+        server webserver2 127.0.0.1:3333 check weight 1 maxconn 50 ssl verify none
+</code></pre></div></div>
+
+<p>The traffic from our proxy now goes through the Web Application Firewall. This is configured to thwart common web application vulnerabilities. We could use the open source WAF like <strong><em>modsecurity</em></strong> or vendor dependent one. The WAFs also have the settings to configure it as proxy for sending the actual website traffic. We can run everything in a containerised environment using docker or Kubernetes.</p>
+
+<h4 id="reference">Reference</h4>
+<ul>
+  <li>https://www.youtube.com/watch?v=qYnA2DFEELw</li>
+  <li>https://www.haproxy.com/blog/redirect-http-to-https-with-haproxy/</li>
+</ul>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-05-22T00:00:00+05:30">May 22, 2021</time></p>
+
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Ideas+on+Scaling+up+security+architecture+for+deploying+web+Apps%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You may also enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+            
+      </div>
+    </div>
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+      <li><a href="/musings/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 The Rosh. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/musings/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

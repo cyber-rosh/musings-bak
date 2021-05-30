@@ -1,1 +1,1 @@
-Sitemap: /sitemap.xml
+Sitemap: https://cyber-rosh.github.io/musings/sitemap.xml
