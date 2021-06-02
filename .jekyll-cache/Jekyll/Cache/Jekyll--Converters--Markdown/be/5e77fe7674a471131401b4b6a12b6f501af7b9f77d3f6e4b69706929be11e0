@@ -1,4 +1,4 @@
-I"Ó<p>Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.</p>
+I"è<p>Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.</p>
 <blockquote>
   <p>The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.</p>
 </blockquote>
@@ -11,7 +11,7 @@
   <li>Web Application Firewall</li>
 </ul>
 
-<p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" /></p>
+<p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <p>The firewall at the ingress of the Virtual Private Server (VPS), will ensure that only https traffic is allowed for our proxy inside VPS. We can also have settings in which the proxy is accessible from specific IP/subnet, we can have settings as follows for <code class="language-plaintext highlighter-rouge">firewalld</code> in CentOS7:</p>
 
