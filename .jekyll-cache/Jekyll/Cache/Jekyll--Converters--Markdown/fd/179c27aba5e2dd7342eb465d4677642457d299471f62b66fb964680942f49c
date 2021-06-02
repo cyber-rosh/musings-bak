@@ -1,22 +1,23 @@
-I"è<p>Let us take a use case in which a small to medium sized enterprise wants to scale up the security infrastructure of their internet facing website. They have this conventional architecture in which the website is hosted on Virtual Private Server (VPS). What can be done immediately, for upgrading the security posture of the hosted website, without actually going into the codebase or the workflow of the website itself.</p>
+I"½<p>One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).</p>
+
 <blockquote>
-  <p>The first step which comes directly to mind is to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop the malicious requests hitting the APIs.</p>
+  <p>The first step we thought was to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop any malicious requests trying to directly hit the APIs.</p>
 </blockquote>
 
-<p>Now, as we have worked out our design goals, how we go about reworking the architecture and achieving the design goals. Of course there are many ways, but one of the ways is to introduce the undermentioned artifacts.</p>
+<p>Now, having worked out the design goals, we went about reworking the architecture. Of course there are many ways to go about the security architecture, but one of the ways was to introduce the following artifacts.</p>
 
 <ul>
-  <li>Firewall</li>
-  <li>Proxy</li>
+  <li>Infrastructure Firewall</li>
+  <li>Proxy / Load balancer</li>
   <li>Web Application Firewall</li>
 </ul>
 
 <p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
-<p>The firewall at the ingress of the Virtual Private Server (VPS), will ensure that only https traffic is allowed for our proxy inside VPS. We can also have settings in which the proxy is accessible from specific IP/subnet, we can have settings as follows for <code class="language-plaintext highlighter-rouge">firewalld</code> in CentOS7:</p>
+<h2 id="infrastructure-firewall">Infrastructure Firewall</h2>
+<p>The infrastructure firewall will take care that all traffic except that meant for <code class="language-plaintext highlighter-rouge">http</code> and <code class="language-plaintext highlighter-rouge">https</code> is dropped at our Virtual Private Server (VPS). We can also configure the firewall in a way in which our proxy/load balancers are accessible from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>
 
 <p>Firewalld Rules</p>
-
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a trusted Zone having specific IP</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-source</span><span class="o">=</span>10.10.10.10 <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
 <span class="c"># Add service http and https to the trusted zone</span>
@@ -28,10 +29,10 @@ firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-servi
 firewall-cmd <span class="nt">--reload</span>
 </code></pre></div></div>
 
-<p>The proxy will ensure that our website is not directly exposed to the outside world and has additional benefits of load balancing. We can setup Access Control Lists (ACLs) so that only specific endpoints of our website APIS are accessible from outside. Some of the sample configuration settings for the HAproxy could be as follows:</p>
+<h2 id="proxy--load-balancer">Proxy / Load balancer</h2>
+<p>The proxy will ensure that our website is not directly exposed to the outside world and has additional benefits of load balancing. We can setup Access Control Lists (ACLs) so that only specific endpoints of our website APIs are accessible from outside. This will also safeguard any accidental exposure of our internal APIs. Some of the sample configuration settings for the HAproxy could be as follows:</p>
 
 <p>HAProxy Config Rules</p>
-
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>frontend httpsandhttp
         <span class="nb">bind</span> <span class="k">*</span>:80
         <span class="nb">bind</span> <span class="k">*</span>:443 ssl crt /etc/ssl/haproxy.pem
@@ -53,7 +54,7 @@ backend app2Servers
         mode http
         server webserver2 127.0.0.1:3333 check weight 1 maxconn 50 ssl verify none
 </code></pre></div></div>
-
+<h2 id="web-application-firewall">Web Application Firewall</h2>
 <p>The traffic from our proxy now goes through the Web Application Firewall. This is configured to thwart common web application vulnerabilities. We could use the open source WAF like <strong><em>modsecurity</em></strong> or vendor dependent one. The WAFs also have the settings to configure it as proxy for sending the actual website traffic. We can run everything in a containerised environment using docker or Kubernetes.</p>
 
 <h4 id="reference">Reference</h4>
