@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Ideas on Scaling up security architecture for deploying web Apps - The Rosh</title>
-<meta name="description" content="One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).">
+<!-- begin _includes/seo.html --><title>Ideas on Scaling up Security Architecture for Deploying Web Apps - The Rosh</title>
+<meta name="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
 
 
   <meta name="author" content="Jaimandeep Singh">
@@ -22,11 +22,11 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="The Rosh">
-<meta property="og:title" content="Ideas on Scaling up security architecture for deploying web Apps">
+<meta property="og:title" content="Ideas on Scaling up Security Architecture for Deploying Web Apps">
 <meta property="og:url" content="https://cyber-rosh.github.io/musings/web-apps/">
 
 
-  <meta property="og:description" content="One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).">
+  <meta property="og:description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
 
 
 
@@ -278,15 +278,15 @@
 
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Ideas on Scaling up security architecture for deploying web Apps">
-    <meta itemprop="description" content="One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).">
+    <meta itemprop="headline" content="Ideas on Scaling up Security Architecture for Deploying Web Apps">
+    <meta itemprop="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
     <meta itemprop="datePublished" content="2021-05-22T00:00:00+05:30">
     
     
     <div class="page__inner-wrap">
       
         <header>
-          <h1 id="page-title" class="page__title" itemprop="headline">Ideas on Scaling up security architecture for deploying web Apps
+          <h1 id="page-title" class="page__title" itemprop="headline">Ideas on Scaling up Security Architecture for Deploying Web Apps
 </h1>
           
 
@@ -321,13 +321,13 @@
 
       <section class="page__content" itemprop="text">
         
-        <p>One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).</p>
+        <p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).</p>
 
 <blockquote>
-  <p>The first step we thought was to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop any malicious requests trying to directly hit the APIs.</p>
+  <p>The first step is to minimize the attack surface by limiting access to the hosted infrastructure (VPS) for authorized traffic:ports <em>(TCP:443)</em>. Thereafter, we can limit access to web APIs and monitor the incoming traffic on the exposed public APIs.</p>
 </blockquote>
 
-<p>Now, having worked out the design goals, we went about reworking the architecture. Of course there are many ways to go about the security architecture, but one of the ways was to introduce the following artifacts.</p>
+<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways was to enable/introduce the following artifacts.</p>
 
 <ul>
   <li>Infrastructure Firewall</li>
@@ -335,18 +335,20 @@
   <li>Web Application Firewall</li>
 </ul>
 
-<p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p><img src="../assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h2 id="infrastructure-firewall">Infrastructure Firewall</h2>
 <p>The infrastructure firewall will take care that all traffic except that meant for <code class="language-plaintext highlighter-rouge">http</code> and <code class="language-plaintext highlighter-rouge">https</code> is dropped at our Virtual Private Server (VPS). We can also configure the firewall in a way in which our proxy/load balancers are accessible from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>
 
 <p>Firewalld Rules</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a trusted Zone having specific IP</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Step 1: Create a trusted Zone having whitelisted IP / subnet.</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-source</span><span class="o">=</span>10.10.10.10 <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
-<span class="c"># Add service http and https to the trusted zone</span>
+
+<span class="c"># Step 2: Add service http and https to the trusted zone</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
-<span class="c"># Remove service http and https from the public zone</span>
+
+<span class="c"># Step 3: Remove service http and https from the public zone</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>public &amp;
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>public &amp;
 firewall-cmd <span class="nt">--reload</span>
@@ -407,7 +409,7 @@ backend app2Servers
     <h4 class="page__share-title">Share on</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=Ideas+on+Scaling+up+security+architecture+for+deploying+web+Apps%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Ideas+on+Scaling+up+Security+Architecture+for+Deploying+Web+Apps%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
   <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
@@ -416,6 +418,16 @@ backend app2Servers
 
 
       
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/musings/ssh-tunnel/" class="pagination--pager" title="Understanding SSH Tunnelling and Proxychains
+">Next</a>
+    
+  </nav>
+
     </div>
 
     
@@ -428,9 +440,54 @@ backend app2Servers
       <div class="grid__wrapper">
         
           
-            
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/ssh-tunnel/" rel="permalink">Understanding SSH Tunnelling and Proxychains
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) eve...</p>
+  </article>
+</div>
+
+        
       </div>
     </div>
+  
   
 </div>
 

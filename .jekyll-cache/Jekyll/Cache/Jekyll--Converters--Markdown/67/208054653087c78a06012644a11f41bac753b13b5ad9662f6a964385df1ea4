@@ -1,10 +1,10 @@
-I"½<p>One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).</p>
+I"Ñ<p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).</p>
 
 <blockquote>
-  <p>The first step we thought was to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop any malicious requests trying to directly hit the APIs.</p>
+  <p>The first step is to minimize the attack surface by limiting access to the hosted infrastructure (VPS) for authorized traffic:ports <em>(TCP:443)</em>. Thereafter, we can limit access to web APIs and monitor the incoming traffic on the exposed public APIs.</p>
 </blockquote>
 
-<p>Now, having worked out the design goals, we went about reworking the architecture. Of course there are many ways to go about the security architecture, but one of the ways was to introduce the following artifacts.</p>
+<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways was to enable/introduce the following artifacts.</p>
 
 <ul>
   <li>Infrastructure Firewall</li>
@@ -12,18 +12,20 @@
   <li>Web Application Firewall</li>
 </ul>
 
-<p><img src="../assets/images/2021-05-22-fig1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p><img src="../assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h2 id="infrastructure-firewall">Infrastructure Firewall</h2>
 <p>The infrastructure firewall will take care that all traffic except that meant for <code class="language-plaintext highlighter-rouge">http</code> and <code class="language-plaintext highlighter-rouge">https</code> is dropped at our Virtual Private Server (VPS). We can also configure the firewall in a way in which our proxy/load balancers are accessible from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>
 
 <p>Firewalld Rules</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a trusted Zone having specific IP</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Step 1: Create a trusted Zone having whitelisted IP / subnet.</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-source</span><span class="o">=</span>10.10.10.10 <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
-<span class="c"># Add service http and https to the trusted zone</span>
+
+<span class="c"># Step 2: Add service http and https to the trusted zone</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>trusted &amp;
-<span class="c"># Remove service http and https from the public zone</span>
+
+<span class="c"># Step 3: Remove service http and https from the public zone</span>
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>http <span class="nt">--zone</span><span class="o">=</span>public &amp;
 firewall-cmd <span class="nt">--permanent</span> <span class="nt">--remove-service</span><span class="o">=</span>https <span class="nt">--zone</span><span class="o">=</span>public &amp;
 firewall-cmd <span class="nt">--reload</span>

