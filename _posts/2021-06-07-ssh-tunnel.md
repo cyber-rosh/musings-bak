@@ -6,25 +6,16 @@ title:  "Understanding SSH Tunnelling and Proxychains"
 Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events. 
 
 # Problem Statement
-We have gained an initial foothold on one of the internal system of an organization. Now, we want to pivot to other systems and for this we require to run `nmap` scans on the internal networks. May be the organization is also running an internally hosted website which is not accessible from outside.How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?
+We have gained an initial foothold on one of the internal system of an organization. Now, we want to run `nmap` scans on the internal networks to pivot laterally. The organization is also running an internally hosted website which is not accessible from outside. How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?
 
-# Setup
-The setup is given in figure below:
+# Cyber Range Setup
+The setup of the cyber range is given in figure below:
 
 ![Deployment Architecture of Application](../assets/images/2021-06-07-ssh-tunnel-fig-1.png){: .align-center }
-For our penetration testing of the website we have been given a PC where we can setup the proxy. In penetration testing terms let's call it a `victim` PC.
 
 # Actions at Victim Machine
-## Step 1 (Optional): 
-Let us assume,we have made an entry into the task scheduler of the victim machine. It will run the `netcat.exe` once it boots up and will connect with the listener running in the Kali machine.
-
-Let's make the task scheduler entry, to run the task once a day
-```
-# Make entry in task scheduler
- SCHTASKS /CREATE /SC DAILY /TN "SystemTask\system Updates" /TR "c:\Users\Dell\AppData\Roaming\WinUpdate\netcat.exe" /ST 10:00
-```
-## Step 2:
-Once, we get the victim machine command prompt back to our Kali machine, we will start the `socate.exe`. This program will forward the traffic to its local port:
+## Step 1:
+As we already have an initial foothold on the `victim` machine, we will start the `socate.exe`. This program will forward the traffic to its local port:
 ```
 socate.exe TCP-LISTEN:8080,fork,reuseaddr TCP:<target-server-ip>:443
 ```
