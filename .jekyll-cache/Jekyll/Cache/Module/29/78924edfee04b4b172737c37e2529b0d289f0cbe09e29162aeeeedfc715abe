@@ -1,4 +1,4 @@
-I"¹
+I"]
 
 <div class="masthead">
   <div class="masthead__inner-wrap">
@@ -9,7 +9,15 @@
           The Rosh
           <span class="site-subtitle">A collection of musings on cyber security</span>
         </a>
-        <ul class="visible-links"></ul>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/musings/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/categories">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/tags">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/year-archive/">Sample Posts</a>
+            </li></ul>
         
         <button class="search__toggle" type="button">
           <span class="visually-hidden">Toggle search</span>

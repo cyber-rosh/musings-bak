@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Understanding SSH Tunnelling and Proxychains - The Rosh</title>
-<meta name="description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
+<!-- begin _includes/seo.html --><title>Conversations with Luke Ahmed in path towards CISSP - The Rosh</title>
+<meta name="description" content="This article was originally published on LinkedIn">
 
 
   <meta name="author" content="Jaimandeep Singh">
@@ -22,30 +22,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="The Rosh">
-<meta property="og:title" content="Understanding SSH Tunnelling and Proxychains">
-<meta property="og:url" content="https://cyber-rosh.github.io/musings/ssh-tunnel/">
+<meta property="og:title" content="Conversations with Luke Ahmed in path towards CISSP">
+<meta property="og:url" content="https://cyber-rosh.github.io/musings/luke-1/">
 
 
-  <meta property="og:description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2021-06-07T00:00:00+05:30">
+  <meta property="og:description" content="This article was originally published on LinkedIn">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2021-06-05T00:00:00+05:30">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="https://cyber-rosh.github.io/musings/ssh-tunnel/">
+
+<link rel="canonical" href="https://cyber-rosh.github.io/musings/luke-1/">
 
 
 
@@ -286,15 +286,15 @@
 
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Understanding SSH Tunnelling and Proxychains">
-    <meta itemprop="description" content="Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.">
-    <meta itemprop="datePublished" content="2021-06-07T00:00:00+05:30">
+    <meta itemprop="headline" content="Conversations with Luke Ahmed in path towards CISSP">
+    <meta itemprop="description" content="This article was originally published on LinkedIn">
+    <meta itemprop="datePublished" content="2021-06-05T00:00:00+05:30">
     
     
     <div class="page__inner-wrap">
       
         <header>
-          <h1 id="page-title" class="page__title" itemprop="headline">Understanding SSH Tunnelling and Proxychains
+          <h1 id="page-title" class="page__title" itemprop="headline">Conversations with Luke Ahmed in path towards CISSP
 </h1>
           
 
@@ -304,7 +304,7 @@
       <span class="page__meta-date">
         <i class="far fa-calendar-alt" aria-hidden="true"></i>
         
-        <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time>
+        <time datetime="2021-06-05T00:00:00+05:30">June 5, 2021</time>
       </span>
     
 
@@ -317,7 +317,7 @@
       <span class="page__meta-readtime">
         <i class="far fa-clock" aria-hidden="true"></i>
         
-          1 minute read
+          2 minute read
         
       </span>
     
@@ -329,74 +329,31 @@
 
       <section class="page__content" itemprop="text">
         
-        <p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
+        <p><em>This article was originally published on <a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:6806848386835238912?updateEntityUrn=urn%3Ali%3Afs_feedUpdate%3A%28*%2Curn%3Ali%3AugcPost%3A6806848386835238912%29">LinkedIn</a></em></p>
 
-<h1 id="problem-statement">Problem Statement</h1>
-<p>We have gained an initial foothold on one of the internal system of an organization. Now, we want to run <code class="language-plaintext highlighter-rouge">nmap</code> scans on the internal networks to pivot laterally. The organization is also running an internally hosted website which is not accessible from outside. How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?</p>
+<p>The path towards CISSP is a meandering one. There are conflicting choices, which one to choose, when both seem to be appropriate. What we choose largely depends upon our world view formed by our experiences. I was going through this question in Luke Ahmed’s book <em><a href="https://www.amazon.com/gp/product/1735085197/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1735085197&amp;linkCode=as2&amp;tag=stunotandth06-20&amp;linkId=5ad2a43b972878466ba16677bbcd0a19">How To Think Like A Manager</a></em> on risk oversight vs risk-based decisions. Well it got me thinking and I shot a scenario at Luke to seek his point of view on risk oversight vs risk-based decisions.</p>
 
-<h1 id="cyber-range-setup">Cyber Range Setup</h1>
-<p>The setup of the cyber range is given in figure below:</p>
+<h1 id="scenario-poised-at-luke">Scenario poised at Luke</h1>
 
-<p><img src="../assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p>Rymar Tech is a products company and has a policy in which the username of its subscribers is not sensitive information. It can be known and shared with anyone. Now, during the vulnerability assessment process, it has come to the fore that their systems are susceptible to brute forcing of usernames. It requires a security upgrade and entails spending of thousands of dollars to fix the problem. In the pandemic times the company revenues are affected. The company is at the risk of losing its reputation as all the usernames may be made public or sold on darknet. Now the management has to decide. This decision making will come under which head : risk oversight or risk-based decisions?</p>
 
-<h1 id="actions-at-victim-machine">Actions at Victim Machine</h1>
-<h2 id="step-1">Step 1:</h2>
-<p>As we already have an initial foothold on the <code class="language-plaintext highlighter-rouge">victim</code> machine, we will start the <code class="language-plaintext highlighter-rouge">socate.exe</code>. This program will forward the traffic to its local port:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>socate.exe TCP-LISTEN:8080,fork,reuseaddr TCP:&lt;target-server-ip&gt;:443
-</code></pre></div></div>
-<p>Once the traffic has been forwarded to a specific port, in our case <code class="language-plaintext highlighter-rouge">8080</code>, we can verify the same through <code class="language-plaintext highlighter-rouge">netstat</code> command:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Now check if the port has been forwarded
-netstat -ano // check connection
-</code></pre></div></div>
-<h2 id="step-3">Step 3:</h2>
-<p>We will redirect the traffic of the victim PC to the Virtual Private Server (VPS) through SSH tunnel, using <code class="language-plaintext highlighter-rouge">plink.exe</code> for windows.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Connect with VPS
-plink.exe -l &lt;username&gt; -pw &lt;password&gt; -R 8080:127.0.0.1:8080 &lt;vps ip&gt;
-</code></pre></div></div>
+<h1 id="lukes-response">Luke’s Response</h1>
 
-<h1 id="actions-at-vps-machine">Actions at VPS Machine</h1>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># To check with curl
-/etc/hosts
-127.0.0.1 &lt;domain-name&gt;
-</code></pre></div></div>
-<h1 id="forward-traffic-to-kali-machine-from-vps">Forward Traffic to Kali Machine from VPS</h1>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># On Kali Machine
-ssh -g -L 8080:localhost:8080 -f -N &lt;username&gt;@&lt;vps ip&gt; // this use when want to open localhost
-</code></pre></div></div>
-<h1 id="now-open-the-browser-and-enter">Now open the browser and enter</h1>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://&lt;domain-name&gt;:8080
-</code></pre></div></div>
+<p>The difference between the board and management is that management is responsible for the actions that are involved in risk management.</p>
 
-<h1 id="configure-socks5-proxy">Configure SOCKS5 proxy</h1>
-<h2 id="actions-at-victim-machine-1">Actions at victim machine</h2>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plink.exe -l &lt;username&gt; -pw &lt;password&gt; -D 8080:127.0.0.1:8080 &lt;vps ip&gt;
-</code></pre></div></div>
-<h2 id="actions-at-vps">Actions at VPS</h2>
-<h3 id="install-proxychains">Install proxychains</h3>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install proxychains
-$ nano /etc/proxychain.conf
-socks5 &lt;vps-public-ip&gt; 8080
-</code></pre></div></div>
-<h2 id="check-on-terminal">Check on terminal</h2>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ proxychains curl www.myweb.com
-</code></pre></div></div>
-<h2 id="on-kali-machine">On Kali Machine</h2>
-<h3 id="do-settings-in-the-browser-if-we-want-to-open-websites-in-browser">Do settings in the browser, if we want to open websites in browser</h3>
+<p>The board does not make any decisions for the company when it comes to narrow risk-based decisions, that is left up to the company’s management. The board is there to make sure management has a risk management program, that is the oversight. The job of the board of directors is to hold management accountable, but not to make the actual decisions in the organization, that’s what separates the board from management.</p>
 
-<h3 id="in-case-you-want-to-use-terminal-for-traffic-and-not-browser-perform-following-steps">In case you want to use terminal for traffic and not browser, perform following steps</h3>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install proxychains
+<p>Remember that what is happening in the context of the question is an actual risk assessment. A risk assessment gathers important information about the information systems of the organization. After the assessment occurs a risk analysis. The results of the risk analysis are then sent to management for approval, to make risk-based decisions. In our CISSP books, risk-based decisions are approved by management.</p>
 
-# nano /etc/proxychain.conf
-socks5 &lt;vps-public-ip&gt; 8080
-</code></pre></div></div>
-<h2 id="check-on-terminal-1">Check on terminal</h2>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ proxychains curl www.myweb.com
-</code></pre></div></div>
+<p>So with this, risk oversight belongs with the board (the ones who make sure management is doing their job).</p>
 
-<h4 id="reference">Reference</h4>
-<ul>
-  <li>https://pswalia2u.medium.com/ssh-tunneling-port-forwarding-pivoting-socks-proxy-85fb7129912d</li>
-</ul>
+<p>Making risk-based decisions that directly affect the company belongs with management, the question asks for the primary reason for “management’s” new initiative.</p>
+
+<p>In the back of the book you will see a list of sources used for each question. In the realm of oversight, I used <em><a href="https://www.icgn.org/sites/default/files/ICGN%20Corp%20Risk%20Oversightweb_0.pdf">this</a></em> source for this question to distinguish between the responsibilities of the board and management.</p>
+
+<p>In it, it states “The board has the task of overseeing management’s implementation of strategic and operational risk management”.</p>
+
+<p><em>Note : This conversation has been published after seeking permission from Luke Ahmed. However, author is solely responsible for any technical errors due to oversight.</em></p>
 
         
       </section>
@@ -408,7 +365,7 @@ socks5 &lt;vps-public-ip&gt; 8080
 
         
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-06-05T00:00:00+05:30">June 5, 2021</time></p>
 
 
       </footer>
@@ -418,22 +375,23 @@ socks5 &lt;vps-public-ip&gt; 8080
     <h4 class="page__share-title">Share on</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=Understanding+SSH+Tunnelling+and+Proxychains%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Conversations+with+Luke+Ahmed+in+path+towards+CISSP%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fluke-1%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fluke-1%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fssh-tunnel%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fluke-1%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
 
       
   <nav class="pagination">
     
-      <a href="/musings/luke-1/" class="pagination--pager" title="Conversations with Luke Ahmed in path towards CISSP
+      <a href="/musings/web-apps/" class="pagination--pager" title="Ideas on Scaling up Security Architecture for Deploying Web Apps
 ">Previous</a>
     
     
-      <a href="#" class="pagination--pager disabled">Next</a>
+      <a href="/musings/ssh-tunnel/" class="pagination--pager" title="Understanding SSH Tunnelling and Proxychains
+">Next</a>
     
   </nav>
 
@@ -457,7 +415,7 @@ socks5 &lt;vps-public-ip&gt; 8080
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/musings/luke-1/" rel="permalink">Conversations with Luke Ahmed in path towards CISSP
+        <a href="/musings/ssh-tunnel/" rel="permalink">Understanding SSH Tunnelling and Proxychains
 </a>
       
     </h2>
@@ -469,7 +427,7 @@ socks5 &lt;vps-public-ip&gt; 8080
       <span class="page__meta-date">
         <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
         
-        <time datetime="2021-06-05T00:00:00+05:30">June 5, 2021</time>
+        <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time>
       </span>
     
 
@@ -482,15 +440,14 @@ socks5 &lt;vps-public-ip&gt; 8080
       <span class="page__meta-readtime">
         <i class="far fa-fw fa-clock" aria-hidden="true"></i>
         
-          2 minute read
+          1 minute read
         
       </span>
     
   </p>
 
 
-    <p class="archive__item-excerpt" itemprop="description">This article was originally published on LinkedIn
-</p>
+    <p class="archive__item-excerpt" itemprop="description">Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) eve...</p>
   </article>
 </div>
 

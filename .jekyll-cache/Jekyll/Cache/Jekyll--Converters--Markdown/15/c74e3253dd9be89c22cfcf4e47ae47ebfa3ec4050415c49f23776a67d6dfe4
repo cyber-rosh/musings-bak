@@ -1,10 +1,10 @@
-I"Ñ<p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).</p>
+I"=<p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
 
 <blockquote>
-  <p>The first step is to minimize the attack surface by limiting access to the hosted infrastructure (VPS) for authorized traffic:ports <em>(TCP:443)</em>. Thereafter, we can limit access to web APIs and monitor the incoming traffic on the exposed public APIs.</p>
+  <p>We can have a two pronged strategy here, first to minimize the attack surface and then to monitor all the ingress traffic for any malicious content. This can be done by limiting access to hosted infrastructure (VPS). Only <code class="language-plaintext highlighter-rouge">https</code> traffic on default port <code class="language-plaintext highlighter-rouge">443</code> should be allowed at ingress of the VPS, all other traffic to be dropped. We also need to limit the access to web APIs. The internal APIs should not be exposed to external traffic and all incoming traffic on the exposed public APIs should be monitored.</p>
 </blockquote>
 
-<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways was to enable/introduce the following artifacts.</p>
+<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways is to enable/introduce following artifacts.</p>
 
 <ul>
   <li>Infrastructure Firewall</li>

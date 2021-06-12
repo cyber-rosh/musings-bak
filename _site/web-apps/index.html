@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>Ideas on Scaling up Security Architecture for Deploying Web Apps - The Rosh</title>
-<meta name="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
+<meta name="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
 
 
   <meta name="author" content="Jaimandeep Singh">
@@ -26,7 +26,7 @@
 <meta property="og:url" content="https://cyber-rosh.github.io/musings/web-apps/">
 
 
-  <meta property="og:description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
+  <meta property="og:description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
 
 
 
@@ -132,7 +132,15 @@
           The Rosh
           <span class="site-subtitle">A collection of musings on cyber security</span>
         </a>
-        <ul class="visible-links"></ul>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/musings/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/categories">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/tags">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/year-archive/">Sample Posts</a>
+            </li></ul>
         
         <button class="search__toggle" type="button">
           <span class="visually-hidden">Toggle search</span>
@@ -279,7 +287,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Ideas on Scaling up Security Architecture for Deploying Web Apps">
-    <meta itemprop="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).">
+    <meta itemprop="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
     <meta itemprop="datePublished" content="2021-05-22T00:00:00+05:30">
     
     
@@ -321,13 +329,13 @@
 
       <section class="page__content" itemprop="text">
         
-        <p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPS).</p>
+        <p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
 
 <blockquote>
-  <p>The first step is to minimize the attack surface by limiting access to the hosted infrastructure (VPS) for authorized traffic:ports <em>(TCP:443)</em>. Thereafter, we can limit access to web APIs and monitor the incoming traffic on the exposed public APIs.</p>
+  <p>We can have a two pronged strategy here, first to minimize the attack surface and then to monitor all the ingress traffic for any malicious content. This can be done by limiting access to hosted infrastructure (VPS). Only <code class="language-plaintext highlighter-rouge">https</code> traffic on default port <code class="language-plaintext highlighter-rouge">443</code> should be allowed at ingress of the VPS, all other traffic to be dropped. We also need to limit the access to web APIs. The internal APIs should not be exposed to external traffic and all incoming traffic on the exposed public APIs should be monitored.</p>
 </blockquote>
 
-<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways was to enable/introduce the following artifacts.</p>
+<p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways is to enable/introduce following artifacts.</p>
 
 <ul>
   <li>Infrastructure Firewall</li>
@@ -423,7 +431,7 @@ backend app2Servers
       <a href="#" class="pagination--pager disabled">Previous</a>
     
     
-      <a href="/musings/ssh-tunnel/" class="pagination--pager" title="Understanding SSH Tunnelling and Proxychains
+      <a href="/musings/luke-1/" class="pagination--pager" title="Conversations with Luke Ahmed in path towards CISSP
 ">Next</a>
     
   </nav>
@@ -473,7 +481,7 @@ backend app2Servers
       <span class="page__meta-readtime">
         <i class="far fa-fw fa-clock" aria-hidden="true"></i>
         
-          2 minute read
+          1 minute read
         
       </span>
     
@@ -481,6 +489,53 @@ backend app2Servers
 
 
     <p class="archive__item-excerpt" itemprop="description">Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) eve...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/luke-1/" rel="permalink">Conversations with Luke Ahmed in path towards CISSP
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-05T00:00:00+05:30">June 5, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">This article was originally published on LinkedIn
+</p>
   </article>
 </div>
 

@@ -1,24 +1,16 @@
-I";<p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
+I"<p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
 
 <h1 id="problem-statement">Problem Statement</h1>
-<p>We have gained an initial foothold on one of the internal system of an organization. Now, we want to pivot to other systems and for this we require to run <code class="language-plaintext highlighter-rouge">nmap</code> scans on the internal networks. May be the organization is also running an internally hosted website which is not accessible from outside.How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?</p>
+<p>We have gained an initial foothold on one of the internal system of an organization. Now, we want to run <code class="language-plaintext highlighter-rouge">nmap</code> scans on the internal networks to pivot laterally. The organization is also running an internally hosted website which is not accessible from outside. How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?</p>
 
-<h1 id="setup">Setup</h1>
-<p>The setup is given in figure below:</p>
+<h1 id="cyber-range-setup">Cyber Range Setup</h1>
+<p>The setup of the cyber range is given in figure below:</p>
 
-<p><img src="../assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" />
-For our penetration testing of the website we have been given a PC where we can setup the proxy. In penetration testing terms let’s call it a <code class="language-plaintext highlighter-rouge">victim</code> PC.</p>
+<p><img src="../assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h1 id="actions-at-victim-machine">Actions at Victim Machine</h1>
-<h2 id="step-1-optional">Step 1 (Optional):</h2>
-<p>Let us assume,we have made an entry into the task scheduler of the victim machine. It will run the <code class="language-plaintext highlighter-rouge">netcat.exe</code> once it boots up and will connect with the listener running in the Kali machine.</p>
-
-<p>Let’s make the task scheduler entry, to run the task once a day</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Make entry in task scheduler
- SCHTASKS /CREATE /SC DAILY /TN "SystemTask\system Updates" /TR "c:\Users\Dell\AppData\Roaming\WinUpdate\netcat.exe" /ST 10:00
-</code></pre></div></div>
-<h2 id="step-2">Step 2:</h2>
-<p>Once, we get the victim machine command prompt back to our Kali machine, we will start the <code class="language-plaintext highlighter-rouge">socate.exe</code>. This program will forward the traffic to its local port:</p>
+<h2 id="step-1">Step 1:</h2>
+<p>As we already have an initial foothold on the <code class="language-plaintext highlighter-rouge">victim</code> machine, we will start the <code class="language-plaintext highlighter-rouge">socate.exe</code>. This program will forward the traffic to its local port:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>socate.exe TCP-LISTEN:8080,fork,reuseaddr TCP:&lt;target-server-ip&gt;:443
 </code></pre></div></div>
 <p>Once the traffic has been forwarded to a specific port, in our case <code class="language-plaintext highlighter-rouge">8080</code>, we can verify the same through <code class="language-plaintext highlighter-rouge">netstat</code> command:</p>

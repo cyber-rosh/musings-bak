@@ -1,0 +1,26 @@
+I"r<p><em>This article was originally published on <a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:6806848386835238912?updateEntityUrn=urn%3Ali%3Afs_feedUpdate%3A%28*%2Curn%3Ali%3AugcPost%3A6806848386835238912%29">LinkedIn</a></em></p>
+
+<p>The path towards CISSP is a meandering one. There are conflicting choices, which one to choose, when both seem to be appropriate. What we choose largely depends upon our world view formed by our experiences. I was going through this question in Luke Ahmed’s book <em><a href="https://www.amazon.com/gp/product/1735085197/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1735085197&amp;linkCode=as2&amp;tag=stunotandth06-20&amp;linkId=5ad2a43b972878466ba16677bbcd0a19">How To Think Like A Manager</a></em> on risk oversight vs risk-based decisions. Well it got me thinking and I shot a scenario at Luke to seek his point of view on risk oversight vs risk-based decisions.</p>
+
+<h1 id="scenario-poised-at-luke">Scenario poised at Luke</h1>
+
+<p>Rymar Tech is a products company and has a policy in which the username of its subscribers is not sensitive information. It can be known and shared with anyone. Now, during the vulnerability assessment process, it has come to the fore that their systems are susceptible to brute forcing of usernames. It requires a security upgrade and entails spending of thousands of dollars to fix the problem. In the pandemic times the company revenues are affected. The company is at the risk of losing its reputation as all the usernames may be made public or sold on darknet. Now the management has to decide. This decision making will come under which head : risk oversight or risk-based decisions?</p>
+
+<h1 id="lukes-response">Luke’s Response</h1>
+
+<p>The difference between the board and management is that management is responsible for the actions that are involved in risk management.</p>
+
+<p>The board does not make any decisions for the company when it comes to narrow risk-based decisions, that is left up to the company’s management. The board is there to make sure management has a risk management program, that is the oversight. The job of the board of directors is to hold management accountable, but not to make the actual decisions in the organization, that’s what separates the board from management.</p>
+
+<p>Remember that what is happening in the context of the question is an actual risk assessment. A risk assessment gathers important information about the information systems of the organization. After the assessment occurs a risk analysis. The results of the risk analysis are then sent to management for approval, to make risk-based decisions. In our CISSP books, risk-based decisions are approved by management.</p>
+
+<p>So with this, risk oversight belongs with the board (the ones who make sure management is doing their job).</p>
+
+<p>Making risk-based decisions that directly affect the company belongs with management, the question asks for the primary reason for “management’s” new initiative.</p>
+
+<p>In the back of the book you will see a list of sources used for each question. In the realm of oversight, I used <em><a href="https://www.icgn.org/sites/default/files/ICGN%20Corp%20Risk%20Oversightweb_0.pdf">this</a></em> source for this question to distinguish between the responsibilities of the board and management.</p>
+
+<p>In it, it states “The board has the task of overseeing management’s implementation of strategic and operational risk management”.</p>
+
+<p><em>Note : This conversation has been published after seeking permission from Luke Ahmed. However, author is solely responsible for any technical errors due to oversight.</em></p>
+:ET
