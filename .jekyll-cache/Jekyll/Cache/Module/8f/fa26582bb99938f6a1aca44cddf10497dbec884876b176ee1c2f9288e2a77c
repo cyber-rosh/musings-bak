@@ -1,4 +1,4 @@
-I"]
+I"ë
 
 <div class="masthead">
   <div class="masthead__inner-wrap">
@@ -15,8 +15,6 @@
               <a href="/musings/categories">Categories</a>
             </li><li class="masthead__menu-item">
               <a href="/musings/tags">Tags</a>
-            </li><li class="masthead__menu-item">
-              <a href="/musings/year-archive/">Sample Posts</a>
             </li></ul>
         
         <button class="search__toggle" type="button">
