@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>Ideas on Scaling up Security Architecture for Deploying Web Apps - The Rosh</title>
-<meta name="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
+<meta name="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
 
 
   <meta name="author" content="Jaimandeep Singh">
@@ -23,10 +23,10 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="The Rosh">
 <meta property="og:title" content="Ideas on Scaling up Security Architecture for Deploying Web Apps">
-<meta property="og:url" content="https://cyber-rosh.github.io/musings/web-apps/">
+<meta property="og:url" content="https://cyber-rosh.github.io/musings/web%20architecture/web-apps/">
 
 
-  <meta property="og:description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
+  <meta property="og:description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
 
 
 
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="https://cyber-rosh.github.io/musings/web-apps/">
+<link rel="canonical" href="https://cyber-rosh.github.io/musings/web%20architecture/web-apps/">
 
 
 
@@ -285,7 +285,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Ideas on Scaling up Security Architecture for Deploying Web Apps">
-    <meta itemprop="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
+    <meta itemprop="description" content="Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).">
     <meta itemprop="datePublished" content="2021-05-22T00:00:00+05:30">
     
     
@@ -327,10 +327,10 @@
 
       <section class="page__content" itemprop="text">
         
-        <p>Let us take a case of a mid sized company which wants to scale up its security architecture for the client facing website. As per the terms of reference, they want minimum disruption in their existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
+        <p>Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
 
 <blockquote>
-  <p>We can have a two pronged strategy here, first to minimize the attack surface and then to monitor all the ingress traffic for any malicious content. This can be done by limiting access to hosted infrastructure (VPS). Only <code class="language-plaintext highlighter-rouge">https</code> traffic on default port <code class="language-plaintext highlighter-rouge">443</code> should be allowed at ingress of the VPS, all other traffic to be dropped. We also need to limit the access to web APIs. The internal APIs should not be exposed to external traffic and all incoming traffic on the exposed public APIs should be monitored.</p>
+  <p>We can have a two pronged strategy here, first to minimize the attack surface and then to monitor the traffic that is allowed to come in. This can be done by limiting access to hosted infrastructure (VPS) by dropping all the traffic at ingress except that for <code class="language-plaintext highlighter-rouge">https</code> or port <code class="language-plaintext highlighter-rouge">443</code>. We also need to limit the access to web APIs in such a way that, the internal APIs are not exposed to outside world and all incoming traffic on the exposed public APIs is being monitored.</p>
 </blockquote>
 
 <p>Now, having worked out the design goals, we can rework the architecture of our deployment. Of course there are many ways to go about the security architecture, but one of the ways is to enable/introduce following artifacts.</p>
@@ -341,10 +341,10 @@
   <li>Web Application Firewall</li>
 </ul>
 
-<p><img src="../assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p><img src="/assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h2 id="infrastructure-firewall">Infrastructure Firewall</h2>
-<p>The infrastructure firewall will take care that all traffic except that meant for <code class="language-plaintext highlighter-rouge">http</code> and <code class="language-plaintext highlighter-rouge">https</code> is dropped at our Virtual Private Server (VPS). We can also configure the firewall in a way in which our proxy/load balancers are accessible from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>
+<p>The infrastructure firewall will drop all traffic at ingress of our VPS except that meant for <code class="language-plaintext highlighter-rouge">https</code> and <code class="language-plaintext highlighter-rouge">http</code>. We can also configure the firewall to limit the traffic from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>
 
 <p>Firewalld Rules</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Step 1: Create a trusted Zone having whitelisted IP / subnet.</span>
@@ -361,7 +361,7 @@ firewall-cmd <span class="nt">--reload</span>
 </code></pre></div></div>
 
 <h2 id="proxy--load-balancer">Proxy / Load balancer</h2>
-<p>The proxy will ensure that our website is not directly exposed to the outside world and has additional benefits of load balancing. We can setup Access Control Lists (ACLs) so that only specific endpoints of our website APIs are accessible from outside. This will also safeguard any accidental exposure of our internal APIs. Some of the sample configuration settings for the HAproxy could be as follows:</p>
+<p>The proxy will ensure that our website is not directly exposed to the outside world and has additional benefits of load balancing. We can setup Access Control Lists (ACLs) so that only specific endpoints of our website APIs are accessible from outside. This will also safeguard any accidental exposure of our internal APIs. Some of the sample configuration settings for the <em>HAproxy</em> could be as follows:</p>
 
 <p>HAProxy Config Rules</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>frontend httpsandhttp
@@ -386,7 +386,7 @@ backend app2Servers
         server webserver2 127.0.0.1:3333 check weight 1 maxconn 50 ssl verify none
 </code></pre></div></div>
 <h2 id="web-application-firewall">Web Application Firewall</h2>
-<p>The traffic from our proxy now goes through the Web Application Firewall. This is configured to thwart common web application vulnerabilities. We could use the open source WAF like <strong><em>modsecurity</em></strong> or vendor dependent one. The WAFs also have the settings to configure it as proxy for sending the actual website traffic. We can run everything in a containerised environment using docker or Kubernetes.</p>
+<p>The traffic from our proxy now goes through the Web Application Firewall. This is configured to thwart common web application vulnerabilities. We could use the open source WAF like <strong><em>modsecurity</em></strong> or vendor dependent one. The WAFs also have the settings to configure it as proxy for sending the actual website traffic. Thus both proxy and WAF can be bundled in one software. We can run everything in a containerised environment using docker or Kubernetes.</p>
 
 <h4 id="reference">Reference</h4>
 <ul>
@@ -401,6 +401,44 @@ backend app2Servers
       <footer class="page__meta">
         
         
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/musings/tags/#firewall" class="page__taxonomy-item" rel="tag">Firewall</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#haproxy" class="page__taxonomy-item" rel="tag">HAProxy</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#load-balancer" class="page__taxonomy-item" rel="tag">Load balancer</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#proxy" class="page__taxonomy-item" rel="tag">Proxy</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#waf" class="page__taxonomy-item" rel="tag">WAF</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/musings/categories/#web-architecture" class="page__taxonomy-item" rel="tag">Web Architecture</a>
+    
+    </span>
+  </p>
 
 
         
@@ -415,11 +453,11 @@ backend app2Servers
     <h4 class="page__share-title">Share on</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=Ideas+on+Scaling+up+Security+Architecture+for+Deploying+Web+Apps%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Ideas+on+Scaling+up+Security+Architecture+for+Deploying+Web+Apps%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb%2520architecture%2Fweb-apps%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb%2520architecture%2Fweb-apps%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb-apps%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fweb%2520architecture%2Fweb-apps%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
 
@@ -576,6 +614,8 @@ backend app2Servers
       
         
       
+        
+          <li><a href="https://github.com/cyber-rosh/musings" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
         
       
         
