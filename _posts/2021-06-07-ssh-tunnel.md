@@ -11,7 +11,7 @@ We have gained an initial foothold on one of the internal system of an organizat
 # Cyber Range Setup
 The setup of the cyber range is given in figure below:
 
-![Deployment Architecture of Application](/assets/images/2021-06-07-ssh-tunnel-fig-1.png){: .align-center }
+![Deployment Architecture of Application](/musings/assets/images/2021-06-07-ssh-tunnel-fig-1.png){: .align-center }
 
 # Actions at Victim Machine
 ## Step 1:
