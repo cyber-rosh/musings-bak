@@ -25,7 +25,7 @@ In buffer overflow vulnerabilities, one of the most common methods used by attac
 
 > ***The key to successful buffer overflow attack is to control the Instruction Pointer (IP).***
 
-In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigations in place:
+In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigation's in place:
 
 - ***Stack Canaries***: This is a compiler level protection. These are inserted by the compilers at compile time into the binaries. Different compilers have different ways by which they accomplish it.
 - ***Data Execution Prevention (DEP)***: This is supported at the hardware level by way of `NX` bit. Setting or unsetting this bit will make the address space executable or non-executable. We can control it through software.
