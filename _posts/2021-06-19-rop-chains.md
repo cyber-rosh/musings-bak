@@ -21,7 +21,7 @@ categories:
 
 ### Getting to know Buffer Overflows
 
-In buffer overflow vulnerabilities one of the most common methods used by the attacker was to write the shellcode onto the stack and then to execute this shellcode. The execution of the shellcode was achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities. 
+In buffer overflow vulnerabilities, one of the most common methods used by attackers is to write the shellcode onto the stack and then to execute it. The execution of the shellcode is achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities. 
 
 > ***The key to successful buffer overflow attack is to control the Instruction Pointer (IP).***
 
