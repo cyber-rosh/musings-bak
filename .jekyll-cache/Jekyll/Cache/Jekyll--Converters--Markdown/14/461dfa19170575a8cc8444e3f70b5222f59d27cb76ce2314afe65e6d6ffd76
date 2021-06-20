@@ -1,4 +1,4 @@
-I"<p>Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
+I"<p>Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, there should be minimum disruption in the existing workflow and any kind of code rewrite is not on the platter. They have a classic deployment in which the website is hosted on Virtual Private Servers (VPSs).</p>
 
 <blockquote>
   <p>We can have a two pronged strategy here, first to minimize the attack surface and then to monitor the traffic that is allowed to come in. This can be done by limiting access to hosted infrastructure (VPS) by dropping all the traffic at ingress except that for <code class="language-plaintext highlighter-rouge">https</code> or port <code class="language-plaintext highlighter-rouge">443</code>. We also need to limit the access to web APIs in such a way that, the internal APIs are not exposed to outside world and all incoming traffic on the exposed public APIs is being monitored.</p>
@@ -12,7 +12,7 @@
   <li>Web Application Firewall</li>
 </ul>
 
-<p><img src="/assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p><img src="/musings/assets/images/2021-05-22-web-apps-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h2 id="infrastructure-firewall">Infrastructure Firewall</h2>
 <p>The infrastructure firewall will drop all traffic at ingress of our VPS except that meant for <code class="language-plaintext highlighter-rouge">https</code> and <code class="language-plaintext highlighter-rouge">http</code>. We can also configure the firewall to limit the traffic from specific IPs/subnets. Some of the sample rules in our <code class="language-plaintext highlighter-rouge">firewalld</code> of CentOS7 as given here:</p>

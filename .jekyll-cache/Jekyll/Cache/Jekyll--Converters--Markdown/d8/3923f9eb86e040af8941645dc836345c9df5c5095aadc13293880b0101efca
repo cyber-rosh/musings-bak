@@ -1,4 +1,4 @@
-I"<p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
+I"<p>Having a good knowledge on SSH tunnelling is an important tool in the arsenal for pentesting engagements and for playing networked Capture The Flag (CTF) events.</p>
 
 <h1 id="problem-statement">Problem Statement</h1>
 <p>We have gained an initial foothold on one of the internal system of an organization. Now, we want to run <code class="language-plaintext highlighter-rouge">nmap</code> scans on the internal networks to pivot laterally. The organization is also running an internally hosted website which is not accessible from outside. How do we expose the internal ports/traffic to the outside attacker machine so that we can run our tools and gain access to resources which are not exposed to the outside world?</p>
@@ -6,7 +6,7 @@
 <h1 id="cyber-range-setup">Cyber Range Setup</h1>
 <p>The setup of the cyber range is given in figure below:</p>
 
-<p><img src="../assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
+<p><img src="/musings/assets/images/2021-06-07-ssh-tunnel-fig-1.png" alt="Deployment Architecture of Application" class="align-center" /></p>
 
 <h1 id="actions-at-victim-machine">Actions at Victim Machine</h1>
 <h2 id="step-1">Step 1:</h2>
