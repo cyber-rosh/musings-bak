@@ -1,4 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-20T16:06:35+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Wading through the maze of ROP chains</title><link href="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/" rel="alternate" type="text/html" title="Wading through the maze of ROP chains" /><published>2021-06-19T14:34:00+05:30</published><updated>2021-06-19T14:34:00+05:30</updated><id>https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/">&lt;p align=&quot;center&quot;&gt;&lt;i&gt;Birds Eye View and the Deep Dive Series&lt;/i&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://cyber-rosh.github.io/musings/feed.xml" rel="self" type="application/atom+xml" /><link href="https://cyber-rosh.github.io/musings/" rel="alternate" type="text/html" /><updated>2021-06-23T23:04:45+05:30</updated><id>https://cyber-rosh.github.io/musings/feed.xml</id><title type="html">The Rosh</title><subtitle>This site is about collection of articles on anything related to Cyber Security.</subtitle><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><entry><title type="html">Conversations with Luke Ahmed in path towards CISSP - 2</title><link href="https://cyber-rosh.github.io/musings/cissp/cissp%20conversations/luke-2/" rel="alternate" type="text/html" title="Conversations with Luke Ahmed in path towards CISSP - 2" /><published>2021-06-23T14:34:00+05:30</published><updated>2021-06-23T14:34:00+05:30</updated><id>https://cyber-rosh.github.io/musings/cissp/cissp%20conversations/luke-2</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/cissp/cissp%20conversations/luke-2/">&lt;p align=&quot;center&quot;&gt;&lt;i&gt;Cyber Security Conversation Series&lt;/i&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;em&gt;Small technicalities don’t matter till we understand the raison d’être&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Continuing the discussions with Luke on CISSP, there was this question in his book &lt;strong&gt;&lt;em&gt;Think Like a Manager&lt;/em&gt;&lt;/strong&gt;, which talked about &lt;strong&gt;&lt;em&gt;due care&lt;/em&gt;&lt;/strong&gt; vs &lt;strong&gt;&lt;em&gt;due diligence&lt;/em&gt;&lt;/strong&gt;. The company Rymar Tech was fined for one of its employees taking the private data of the company in the USB drive and walking out. However, the fine was later reduced. Why was the fine reduced?&lt;/p&gt;
+
+&lt;h1 id=&quot;due-care-vs-due-diligence&quot;&gt;&lt;em&gt;Due Care&lt;/em&gt; vs &lt;em&gt;Due Diligence&lt;/em&gt;&lt;/h1&gt;
+&lt;p&gt;I reasoned with Luke that the more plausible reason to reduce the fine seems to be &lt;strong&gt;&lt;em&gt;Due Diligence&lt;/em&gt;&lt;/strong&gt;.  And why? Well, the Merriam-Webster’s dictionary defines &lt;strong&gt;&lt;em&gt;due care&lt;/em&gt;&lt;/strong&gt; as:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;em&gt;The care that an ordinarily reasonable and prudent person would use under the same or similar circumstances.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The lack of &lt;strong&gt;&lt;em&gt;due care&lt;/em&gt;&lt;/strong&gt; can lead to legal action. However, here we are talking about fines at the corporate level. &lt;em&gt;Due diligence&lt;/em&gt; is the term more appropriate for use at corporate laws [1]. Therefore &lt;strong&gt;&lt;em&gt;due diligence&lt;/em&gt;&lt;/strong&gt; may be a more appropriate term as the fine was reduced at corporate level and no individual mistakes were pinpointed.&lt;/p&gt;
+
+&lt;h1 id=&quot;lukes-response&quot;&gt;&lt;em&gt;Luke’s Response&lt;/em&gt;&lt;/h1&gt;
+&lt;p&gt;This understanding is fine.  For the CISSP exam I would remember that ultimate responsibility will fall on management as well as legal action even if the individual is at fault for failing to provide due care.  It is not the systems administrator we see on TV testifying at Congressional hearings or TV interviews, it is a senior executive.  It is because the individual did not practice due care that management will still be responsible.&lt;/p&gt;
+
+&lt;p&gt;I would also remember that in the question proper due diligence and due care was practiced at all times.  It’s just that they didn’t anticipate an employee walking out with a USB drive, and the law could not let this go without some form of fine even though due diligence and due care was done.  And the only way to issue the fine was to use the wording of the law of due care as a penalty, since failure of due diligence isn’t punishable.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Note : This conversation has been published after seeking permission from Luke Ahmed. However, the author is solely responsible for any technical errors due to oversight.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Reference:&lt;/em&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;https://lawyer.zone/due-care/&lt;/li&gt;
+&lt;/ol&gt;</content><author><name>Jaimandeep Singh</name><email>karma.jaimandeep@gmail.com</email></author><category term="CISSP" /><category term="CISSP Conversations" /><category term="CISSP" /><category term="Luke Ahmed" /><category term="Conversations" /><summary type="html">Cyber Security Conversation Series</summary></entry><entry><title type="html">Wading through the maze of ROP chains</title><link href="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/" rel="alternate" type="text/html" title="Wading through the maze of ROP chains" /><published>2021-06-19T14:34:00+05:30</published><updated>2021-06-19T14:34:00+05:30</updated><id>https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains</id><content type="html" xml:base="https://cyber-rosh.github.io/musings/buffer%20overflow/rop%20chain/rop-chains/">&lt;p align=&quot;center&quot;&gt;&lt;i&gt;Birds Eye View and the Deep Dive Series&lt;/i&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;birds-eye-view&quot;&gt;Birds Eye View&lt;/h1&gt;
 &lt;blockquote&gt;
@@ -7,13 +34,13 @@
 
 &lt;h3 id=&quot;getting-to-know-buffer-overflows&quot;&gt;Getting to know Buffer Overflows&lt;/h3&gt;
 
-&lt;p&gt;In buffer overflow vulnerabilities one of the most common methods used by the attacker was to write the shellcode onto the stack and then to execute this shellcode. The execution of the shellcode was achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities.&lt;/p&gt;
+&lt;p&gt;In buffer overflow vulnerabilities, one of the most common methods used by attackers is to write the shellcode onto the stack and then to execute it. The execution of the shellcode is achieved by controlling the EIP, and pointing it to the start of the shellcode. The buffer overflow attacks have targeted both stack and heap memory regions for exploiting these vulnerabilities.&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;&lt;strong&gt;&lt;em&gt;The key to successful buffer overflow attack is to control the Instruction Pointer (IP).&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigations in place:&lt;/p&gt;
+&lt;p&gt;In order to mitigate the effect of the buffer overflow vulnerabilities we have following mitigation’s in place:&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;strong&gt;&lt;em&gt;Stack Canaries&lt;/em&gt;&lt;/strong&gt;: This is a compiler level protection. These are inserted by the compilers at compile time into the binaries. Different compilers have different ways by which they accomplish it.&lt;/li&gt;
