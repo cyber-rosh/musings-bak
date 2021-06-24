@@ -32,7 +32,7 @@ In order to mitigate the effect of the buffer overflow vulnerabilities we have f
 - ***Address Space Layout Randomization (ASLR)***: Here we randomize the address space of various segments of the program, so that they don’t have fixed address which can be easily exploited by the malicious actors. ASLR can be enabled or disable at the operation system level. In linux we have additional features to control it at program level also.
 
 ### Where do the ROPs fit in?
-In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It is primarily used to bypass the DEP safeguards. 
+In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It can be used to bypass the DEP/ASLR safeguards. 
 
 ### And what do you mean by gadgets?
 Well, these are a group of instructions which end with `ret`. Some of the useful ROP gadgets are:
