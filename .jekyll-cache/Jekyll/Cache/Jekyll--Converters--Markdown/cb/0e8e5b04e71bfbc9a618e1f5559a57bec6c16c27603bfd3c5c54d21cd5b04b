@@ -1,4 +1,4 @@
-I"]<p align="center"><i>Birds Eye View and the Deep Dive Series</i></p>
+I"]<p align="center"><i>Birds Eye View and the Deep Dive Series</i></p>
 
 <h1 id="birds-eye-view">Birds Eye View</h1>
 <blockquote>
@@ -22,7 +22,7 @@
 </ul>
 
 <h3 id="where-do-the-rops-fit-in">Where do the ROPs fit in?</h3>
-<p>In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It is primarily used to bypass the DEP safeguards.</p>
+<p>In Return Oriented Programming (ROP) we chain the gadgets in such a way that we are able to obtain the shell (command prompt) on the vulnerable system. It can be used to bypass the DEP/ASLR safeguards.</p>
 
 <h3 id="and-what-do-you-mean-by-gadgets">And what do you mean by gadgets?</h3>
 <p>Well, these are a group of instructions which end with <code class="language-plaintext highlighter-rouge">ret</code>. Some of the useful ROP gadgets are:</p>
