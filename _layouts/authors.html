@@ -1,0 +1,149 @@
+---
+---
+
+
+<html lang="{{ site.locale | slice: 0,2 | default: "en" }}" class="no-js">
+  <head>
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    {% include head.html %}
+    {% include head/custom.html %}
+
+  
+  <style>
+  
+		.card {
+		  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+		  max-width: 300px;
+		  margin: auto;
+		  text-align: center;
+		}
+
+		.card_title {
+		  color: grey;
+		  font-size: 18px;
+		}
+
+		.card_button {
+		  border: none;
+		  outline: 0;
+		  display: inline-block;
+		  padding: 8px;
+		  color: white;
+		  background-color: #000;
+		  text-align: center;
+		  cursor: pointer;
+		  width: 100%;
+		  font-size: 18px;
+		}
+
+		.card_a {
+		  text-decoration: none;
+		  font-size: 22px;
+		  color: black;
+		}
+
+		.card_button:hover, a:hover {
+		  opacity: 0.7;
+		}
+
+  </style>
+
+
+  </head>
+
+  <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}">
+
+    {% include browser-upgrade.html %}
+    {% include masthead.html %}
+
+    <div class="initial-content">
+      
+
+  	{% for author0 in site.data.authors %}
+		{% assign author = author0[1] %}
+
+	  <div class="card">
+
+	  {% if author.avatar %}
+			    
+      {% if author.avatar contains "://" %}
+        {% assign author_src = author.avatar %}
+      {% else %}
+        {% assign author_src = author.avatar | relative_url %}
+      {% endif %}
+
+      {% if author.home %}
+        {% if author.home contains "://" %}
+          {% assign author_link = author.home %}
+        {% else %}
+          {% assign author_link = author.home | relative_url %}
+        {% endif %}
+        <a class="card_a" href="{{ author_link }}">
+          <img src="{{ author_src }}" alt="{{ author.name }}" style="width:100%" >
+        </a>
+      {% else %}
+        <img src="{{ author_src }}" alt="{{ author.name }}" style="width:100%">
+      {% endif %}
+	    	
+  	{% endif %}
+
+		  <h1>{{ author.name }}</h1>
+		  
+		  {% if author.bio %}
+		  	<p class="card_title">{{ author.bio }}</p>
+		  {% endif %}
+		  {% if author.description %}
+		  <p id="description">{{ author.description }}</p>
+		  {% endif %}
+
+
+		 {% if author.twitter %}
+		 <a class="card_a" href="https://twitter.com/{{ author.twitter }}"><i class="fab fa-fw fa-twitter-square"></i></a>
+		 {% endif %}
+
+
+			{% if author.linkedin %}
+		 		<a class="card_a " href="https://www.linkedin.com/in/{{ author.linkedin }}"><i class="fab fa-fw fa-linkedin"></i></a>
+		 	{% endif %}
+
+		  
+		 {% if author.github %}
+		 	<a class="card_a" href="https://github.com/{{ author.github }}"><i class="fab fa-fw fa-github"></i></a>
+		 {% endif %}
+
+
+	 	 {% if author.stackoverflow %}
+		 	<a class="card_a" href="https://www.stackoverflow.com/users/{{ author.stackoverflow }}"><i class="fab fa-fw fa-stack-overflow"></i></a>
+		 {% endif %}
+			
+
+		 {% if author.email %}
+		 <p><a class="card_a" href="mailto:{{ author.email }}"><button class="card_button" >Contact</button></a></p>
+			{% endif %}
+
+		</div>
+
+
+
+		{% endfor %}
+
+    </div>
+
+    {% if site.search == true %}
+      <div class="search-content">
+        {% include search/search_form.html %}
+      </div>
+    {% endif %}
+
+    <div class="page__footer">
+      <footer>
+        {% include footer/custom.html %}
+        {% include footer.html %}
+      </footer>
+    </div>
+
+    {% include scripts.html %}
+
+  </body>
+</html>
+
